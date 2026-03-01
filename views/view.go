@@ -31,6 +31,7 @@ const (
 	rsltMrgn       = 1
 	smplConnHeight = 9
 	smplConnMrgn   = 3
+	helpBarHeight  = 1
 
 	stopsLineFixedWidth = (borderSize * 2) + (smplConnMrgn * 2) + (2+5)*2 + 6
 	stopsLineMinWidth   = 10
@@ -98,6 +99,15 @@ var (
 			Bold(true).
 			Foreground(sbbWhite).
 			Background(sbbRed)
+
+	helpKeyStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(sbbWhite).
+			Background(sbbMidGray).
+			Padding(0, 1)
+
+	helpDescStyle = lipgloss.NewStyle().
+			Foreground(sbbGray)
 )
 
 type focusable struct {
@@ -125,11 +135,11 @@ type model struct {
 	inputs        []textinput.Model
 	isArrivalTime bool
 	connections   []models.Connection
-	loading        bool
-	errorMsg       string
-	searched       bool
-	lastFromQuery  string
-	lastToQuery    string
+	loading       bool
+	errorMsg      string
+	searched      bool
+	lastFromQuery string
+	lastToQuery   string
 }
 
 func InitialModel() model {
@@ -307,6 +317,8 @@ func (m model) View() string {
 			Render(m.renderDetailedResult()),
 	)
 
+	helpBar := m.renderHelpBar()
+
 	return lipgloss.JoinVertical(lipgloss.Left,
 		header,
 		noStyle.
@@ -316,6 +328,7 @@ func (m model) View() string {
 			Height(m.resultsHeight()).
 			Padding(0, rsltMrgn).
 			Render(results),
+		helpBar,
 	)
 }
 
@@ -324,7 +337,7 @@ func (m model) contentWidth() int {
 }
 
 func (m model) resultsHeight() int {
-	return max(m.height-hdrHeight-hdrElmtPadd, 0)
+	return max(m.height-hdrHeight-hdrElmtPadd-helpBarHeight, 0)
 }
 
 func (m model) maxVisibleConnections() int {
@@ -499,6 +512,24 @@ func (m model) renderHeader() string {
 	headerItems = append(headerItems, titleStyle.Render(" SBB TIMETABLES <+> "))
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, headerItems...)
+}
+
+func (m model) renderHelpBar() string {
+	keys := []struct{ key, desc string }{
+		{"󰌒", "navigate header"},
+		{"", "search"},
+		{"󱁐", "toggle"},
+		{"󰹹", "select result"},
+		{"", "complete suggestion"},
+		{"󱊷", "quit"},
+	}
+
+	var parts []string
+	for _, k := range keys {
+		parts = append(parts, helpKeyStyle.Render(k.key)+" "+helpDescStyle.Render(k.desc))
+	}
+
+	return " " + strings.Join(parts, "   ")
 }
 
 func (m model) renderHeaderItem(idx int) string {
