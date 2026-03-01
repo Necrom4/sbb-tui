@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Necrom4/sbb-tui/compare/v1.0.1...v1.0.2) (2026-03-01)
+
+
+### Bug Fixes
+
+* revert goreleaser homebrew key to brews ([47b2da3](https://github.com/Necrom4/sbb-tui/commit/47b2da32c5f97ef04018f74d6fda8de4cf17a63a))
+
 ## [1.0.1](https://github.com/Necrom4/sbb-tui/compare/v1.0.0...v1.0.1) (2026-03-01)
 
 
