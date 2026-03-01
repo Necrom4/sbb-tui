@@ -31,7 +31,7 @@ changelog:
       - "^docs:"
       - "^test:"
 
-brews:
+homebrew:
   - name: sbb-tui
     commit_author:
       name: Necrom4
