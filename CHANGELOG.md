@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/Necrom4/sbb-tui/compare/v1.0.3...v1.1.0) (2026-03-01)
+
+
+### Features
+
+* add station suggestion ([24257b3](https://github.com/Necrom4/sbb-tui/commit/24257b3a1d08af6413528385a406bc57ea10c3a2))
+* **view:** add help bar ([21dd62f](https://github.com/Necrom4/sbb-tui/commit/21dd62fb9a7032663ba5322d869b0ff783055d02))
+
 ## [1.0.3](https://github.com/Necrom4/sbb-tui/compare/v1.0.2...v1.0.3) (2026-03-01)
 
 
