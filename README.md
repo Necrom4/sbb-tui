@@ -49,7 +49,7 @@ Flags:
 - [ ] Warning flags
 - [ ] Wrong input handling
 - [ ] Better UI screen size handling
-- [ ] Starting screen ascii/unicode icon
+- [x] Starting screen logo
 - [x] Google maps link to walk coordinates
   - [ ] Visual representation
 - [x] Nerdfont icons option
