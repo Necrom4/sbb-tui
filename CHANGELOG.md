@@ -1,3 +1,14 @@
+## [1.3.1](https://github.com/Necrom4/sbb-tui/compare/v1.3.0...v1.3.1) (2026-03-22)
+
+
+### Bug Fixes
+
+* backspace removes separator together with its digit ([613c2a8](https://github.com/Necrom4/sbb-tui/commit/613c2a82b9f76db169690f39260dc01dc385bb68))
+* clear stale results when searching with empty inputs ([e431e25](https://github.com/Necrom4/sbb-tui/commit/e431e25b5d4a61da2905c526b27abadf19b8fdd9))
+* correct date and time input validation ([083ffe1](https://github.com/Necrom4/sbb-tui/commit/083ffe116f5a1d02a9c63aa17131abdd036b7298))
+* prevent crash on small terminal windows ([3d0378f](https://github.com/Necrom4/sbb-tui/commit/3d0378ff6fdb8dd91598909a15e8acd7cf51039e))
+* show 'terminal too small' message instead of rendering broken UI ([39e1ac4](https://github.com/Necrom4/sbb-tui/commit/39e1ac4cbf464afe2d62a1bb08bfa95a6ca88921))
+
 # [1.3.0](https://github.com/Necrom4/sbb-tui/compare/v1.2.1...v1.3.0) (2026-03-22)
 
 
