@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Necrom4/sbb-tui/compare/v1.2.1...v1.3.0) (2026-03-22)
+
+
+### Features
+
+* **views:** implement sbb-logo on startup screen ([27f442e](https://github.com/Necrom4/sbb-tui/commit/27f442e942c3f5d3fb409df893e00635ee2ddaab))
+
 ## [1.2.1](https://github.com/Necrom4/sbb-tui/compare/v1.2.0...v1.2.1) (2026-03-22)
 
 
