@@ -304,6 +304,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			if err := m.validateInputs(); err != "" {
 				m.errorMsg = err
+				m.connections = nil
+				m.searched = false
+				m.resultIndex = 0
 				return m, nil
 			}
 			m.loading = true
@@ -324,6 +327,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "search":
 				if err := m.validateInputs(); err != "" {
 					m.errorMsg = err
+					m.connections = nil
+					m.searched = false
+					m.resultIndex = 0
 					return m, nil
 				}
 				m.loading = true
