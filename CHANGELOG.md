@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/Necrom4/sbb-tui/compare/v1.3.1...v1.3.2) (2026-03-22)
+
+
+### Bug Fixes
+
+* **views:** let header take whole window width ([40ce6b9](https://github.com/Necrom4/sbb-tui/commit/40ce6b95088d7533b641503afac669d0618aede4))
+
 ## [1.3.1](https://github.com/Necrom4/sbb-tui/compare/v1.3.0...v1.3.1) (2026-03-22)
 
 
