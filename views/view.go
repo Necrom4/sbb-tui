@@ -15,6 +15,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/x/ansi"
 )
 
 var (
@@ -46,10 +47,8 @@ const (
 	fullConnPaddH = 3
 	fullConnPaddV = 1
 
-	// Minimum input width per From/To field so the header is still usable.
-	minInputWidth = 10
-
-	minTermHeight = hdrHeight + borderSize + helpBarHeight + borderSize + smplConnHeight
+	minTermWidth  = 80
+	minTermHeight = 24
 )
 
 var (
@@ -194,6 +193,7 @@ type model struct {
 	width, height int
 	tabIndex      int
 	resultIndex   int
+	detailScrollY int
 	headerOrder   []focusable
 	inputs        []textinput.Model
 	icons         iconSet
@@ -252,16 +252,16 @@ func InitialModel(cfg Config) model {
 		case 2:
 			t.Placeholder = now.Format("2006-01-02")
 			t.Prompt = m.icons.prompt
-			t.Width = 12
 			t.CharLimit = 10
+			t.Width = t.CharLimit - 1
 			if cfg.Date != "" {
 				t.SetValue(cfg.Date)
 			}
 		case 3:
 			t.Placeholder = now.Format("15:04")
 			t.Prompt = m.icons.prompt
-			t.Width = 7
 			t.CharLimit = 5
+			t.Width = t.CharLimit - 1
 			if cfg.Time != "" {
 				t.SetValue(cfg.Time)
 			}
@@ -368,11 +368,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up":
 			if len(m.connections) > 0 && m.resultIndex > 0 {
 				m.resultIndex--
+				m.detailScrollY = 0
 			}
 		case "down":
 			if len(m.connections) > 0 && m.resultIndex < len(m.connections)-1 {
 				m.resultIndex++
+				m.detailScrollY = 0
 			}
+		case "shift+up":
+			if m.detailScrollY > 0 {
+				m.detailScrollY--
+			}
+		case "shift+down":
+			m.detailScrollY++
 		}
 
 	case SuggestionsMsg:
@@ -389,6 +397,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.connections = msg.connections
 		m.resultIndex = 0
+		m.detailScrollY = 0
 		if len(m.connections) == 0 {
 			m.errorMsg = "No connections found for the specified route."
 		}
@@ -399,13 +408,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) minTermWidth() int {
-	return m.headerFixedWidth() + 2*minInputWidth
-}
-
 func (m model) View() string {
-	if m.width < m.minTermWidth() || m.height < minTermHeight {
-		minW := m.minTermWidth()
+	if m.width < minTermWidth || m.height < minTermHeight {
+		minW := minTermWidth
 		msg := fmt.Sprintf("Terminal too small (%dx%d)\nMinimum size: %dx%d", m.width, m.height, minW, minTermHeight)
 		return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center,
 			noStyle.Foreground(sbbRed).Bold(true).Render(msg))
@@ -637,11 +642,11 @@ func (m model) renderHeader() string {
 
 func (m model) renderHelpBar() string {
 	keys := []struct{ key, desc string }{
-		{m.icons.keyTab, "navigate header"},
+		{m.icons.keyTab, "navigate"},
 		{m.icons.keyEnter, "search"},
 		{m.icons.keySpace, "toggle"},
-		{m.icons.keyUpDw, "select result"},
-		{m.icons.keyRight, "complete suggestion"},
+		{m.icons.keyUpDw, "results"},
+		{m.icons.keyRight, "complete"},
 		{m.icons.keyEsc, "quit"},
 	}
 
@@ -662,10 +667,13 @@ func (m model) renderHeaderItem(idx int) string {
 
 	if item.kind == KindInput {
 		input := m.inputs[item.index]
+		view := input.View()
 		if input.ShowSuggestions {
-			style = style.Width(lipgloss.Width(input.Prompt) + input.Width)
+			// Clip text to prevent line wrapping.
+			maxView := lipgloss.Width(input.Prompt) + input.Width
+			view = ansi.Truncate(view, maxView, "")
 		}
-		return style.Render(input.View())
+		return style.Render(view)
 	}
 
 	icon := " "
@@ -761,9 +769,20 @@ func (m model) renderFullConnection(c models.Connection, width int) string {
 		}
 	}
 
-	content := strings.Join(lines, "\n")
 	boxHeight := max(m.resultsHeight()-borderSize-(fullConnPaddV*2), 0)
-	return detailedResultStyle.Width(width).Height(boxHeight).Render(content)
+
+	// Wrap and split into visual lines for scrolling.
+	content := strings.Join(lines, "\n")
+	wrapped := noStyle.Width(innerWidth).Render(content)
+	visLines := strings.Split(wrapped, "\n")
+
+	// Scroll and clamp to the visible area.
+	if len(visLines) > boxHeight {
+		scrollY := min(m.detailScrollY, len(visLines)-boxHeight)
+		visLines = visLines[scrollY : scrollY+boxHeight]
+	}
+
+	return detailedResultStyle.Width(width).Height(boxHeight).Render(strings.Join(visLines, "\n"))
 }
 
 func (m model) renderJourneySection(section models.Section, width int, isFirst, isLast bool) []string {
@@ -772,7 +791,6 @@ func (m model) renderJourneySection(section models.Section, width int, isFirst, 
 	const timeCol = 5
 	const delayCol = 4
 	const symbolCol = 5
-	const platformCol = 10
 
 	depTime := section.Departure.Departure.Local().Format("15:04")
 	depDelay := section.Departure.Delay

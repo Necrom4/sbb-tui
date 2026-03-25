@@ -43,16 +43,12 @@ Flags:
   -v, --version       Print version and exit
 ```
 
-## 🏆 ROADMAP
+## 📝 TODO
 
 - [ ] **Stationboard** mode, returns a list of the next departures at a specific station.
-- [ ] Warning flags
-- [ ] Wrong input handling
-- [ ] Better UI screen size handling
-- [x] Starting screen logo
-- [x] Google maps link to walk coordinates
-  - [ ] Visual representation
-- [x] Nerdfont icons option
-- [x] Basic command flags
-- [ ] ~~Transport type icons (doesn't seem to be available)~~  󰃧 󰔭 󰻈 
-- [ ] ~~Capacity icons (doesn't seem to be available)~~ 󰀎
+- [ ] Connection warnings
+- [ ] Better keymaps/navigation logic
+- [ ] Better keymap help
+- [ ] Suggestions when writing strings without accent (writing "zurich", "Zürich" isn't suggested)
+- [ ] Revise UI for not-so-wide terminals
+- [ ] Scroll icons as hint in border of scrollable detailedRender window
