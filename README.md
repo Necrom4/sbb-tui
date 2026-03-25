@@ -53,4 +53,4 @@ Flags:
 - [ ] Revise UI for not-so-wide terminals
 - [ ] Scroll icons as hint in border of scrollable detailedRender window
 - [ ] Only autocomplete with cursor at last character, otherwise move cursor right
-- [ ] Fix date/time string moving left when typing last character
+- [ ] Shorten date/time fields by one character length by either extending cursor placement to character before right border, or by removing cursor when finished at end of input CharLimit
