@@ -1,3 +1,14 @@
+## [1.3.3](https://github.com/Necrom4/sbb-tui/compare/v1.3.2...v1.3.3) (2026-03-25)
+
+
+### Bug Fixes
+
+* **views:** clip text to prevent line wrapping ([2294cab](https://github.com/Necrom4/sbb-tui/commit/2294cab918eaa337e95235a136573e6cbc0dd158))
+* **views:** enforce fixed minimum terminal size ([76de3e6](https://github.com/Necrom4/sbb-tui/commit/76de3e6b02125ca9d2cc31c0bc7cabcf8c467b94))
+* **views:** fixed size detailedResult window ([213f9ee](https://github.com/Necrom4/sbb-tui/commit/213f9ee2125ef88ebb2789bc57bc842e4a74b574))
+* **views:** reduce date/time inputs width ([4ec1b5d](https://github.com/Necrom4/sbb-tui/commit/4ec1b5d5cedf024778a12170ba87a9c00d163075))
+* **views:** revise shortcut bar names ([e91d021](https://github.com/Necrom4/sbb-tui/commit/e91d0217547811db931e9dc296ac4275c20b7c25))
+
 ## [1.3.2](https://github.com/Necrom4/sbb-tui/compare/v1.3.1...v1.3.2) (2026-03-22)
 
 
