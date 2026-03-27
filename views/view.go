@@ -261,6 +261,9 @@ func InitialModel(cfg Config) model {
 			t.Prompt = m.icons.prompt
 			t.CharLimit = 10
 			t.Width = t.CharLimit
+			t.ShowSuggestions = true
+			t.CompletionStyle = noStyle.Foreground(sbbMidGray)
+			t.KeyMap.AcceptSuggestion = key.NewBinding(key.WithDisabled())
 			if cfg.Date != "" {
 				t.SetValue(cfg.Date)
 			} else {
@@ -270,6 +273,9 @@ func InitialModel(cfg Config) model {
 			t.Prompt = m.icons.prompt
 			t.CharLimit = 5
 			t.Width = t.CharLimit
+			t.ShowSuggestions = true
+			t.CompletionStyle = noStyle.Foreground(sbbMidGray)
+			t.KeyMap.AcceptSuggestion = key.NewBinding(key.WithDisabled())
 			if cfg.Time != "" {
 				t.SetValue(cfg.Time)
 			} else {
@@ -609,6 +615,10 @@ func (m *model) updateInputs(msg tea.Msg) tea.Cmd {
 		}
 	}
 
+	// Update date/time inputs' ghost completion
+	m.inputs[2].SetSuggestions([]string{completeDate(m.inputs[2].Value())})
+	m.inputs[3].SetSuggestions([]string{completeTime(m.inputs[3].Value())})
+
 	return tea.Batch(cmds...)
 }
 
@@ -629,6 +639,23 @@ func fetchSuggestionsCmd(inputIndex int, query string) tea.Cmd {
 	}
 }
 
+func completeDate(partial string) string {
+	now := time.Now()
+	full := now.Format("02.01.2006")
+	if len(partial) < len(full) {
+		return partial + full[len(partial):]
+	}
+	return partial
+}
+
+func completeTime(partial string) string {
+	if len(partial) < 5 {
+		full := partial + "00:00"[len(partial):]
+		return full
+	}
+	return partial
+}
+
 // toAPIDate converts a Swiss-format date (DD.MM.YYYY) to the API format (YYYY-MM-DD).
 func toAPIDate(swiss string) string {
 	parts := strings.Split(swiss, ".")
@@ -639,15 +666,14 @@ func toAPIDate(swiss string) string {
 }
 
 func (m model) searchCmd() tea.Cmd {
-	maxConnections := m.maxVisibleConnections()
 	return func() tea.Msg {
 		res, err := api.FetchConnections(
 			m.inputs[0].Value(),
 			m.inputs[1].Value(),
-			toAPIDate(m.inputs[2].Value()),
-			m.inputs[3].Value(),
+			toAPIDate(completeDate(m.inputs[2].Value())),
+			completeTime(m.inputs[3].Value()),
 			m.isArrivalTime,
-			maxConnections,
+			m.maxVisibleConnections(),
 		)
 		return DataMsg{connections: res, err: err}
 	}
@@ -656,7 +682,7 @@ func (m model) searchCmd() tea.Cmd {
 func (m model) headerFixedWidth() int {
 	width := 0
 	for i, item := range m.headerOrder {
-		if item.kind == KindInput && m.inputs[item.index].ShowSuggestions {
+		if item.id == "from" || item.id == "to" {
 			// From/To: only count the per-item overhead (border + padding + prompt).
 			width += borderSize + 2 + lipgloss.Width(m.inputs[item.index].Prompt)
 			continue
@@ -703,7 +729,7 @@ func (m model) renderHeaderItem(idx int) string {
 		input := m.inputs[item.index]
 		view := input.View()
 		if input.ShowSuggestions {
-			// Clip text to prevent line wrapping.
+			// Clip text to prevent suggestion overflow.
 			maxView := lipgloss.Width(input.Prompt) + input.Width
 			view = ansi.Truncate(view, maxView, "")
 		}
