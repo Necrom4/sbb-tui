@@ -879,6 +879,45 @@ func getGoogleMapsURL(s models.Section) string {
 		dep.X, dep.Y, arr.X, arr.Y)
 }
 
+// rendering Walk-only rides
+func (m model) renderSimpleWalkConnection(c models.Connection, index int, width int) string {
+	dep := c.FromData.Departure.Local().Format("15:04")
+	arr := c.ToData.Arrival.Local().Format("15:04")
+
+	departure := noStyle.Bold(true).Render(dep)
+	arrival := noStyle.Bold(true).Render(arr)
+	duration := noStyle.Render(formatDuration(c.Duration))
+
+	walkIcon := noStyle.Background(sbbBlue).Foreground(sbbWhite).Render(" " + m.icons.wlk + " ")
+	walkText := noStyle.Render("Walking")
+
+	stopsLineWidth := max(width-stopsLineFixedWidth, stopsLineMinWidth)
+	stopsLine := noStyle.Bold(true).Render(
+		m.icons.filledDot +
+			strings.Repeat(m.icons.horzLine, max(stopsLineWidth, 2)) +
+			m.icons.filledDot,
+	)
+
+	lineWidth := max(width-15, lipgloss.Width(duration))
+	bottomLine := "  " + lipgloss.PlaceHorizontal(lineWidth, lipgloss.Right, duration)
+
+	content := fmt.Sprintf("\n  %s %s\n\n  %s  %s  %s\n\n%s\n",
+		walkIcon,
+		walkText,
+		departure,
+		stopsLine,
+		arrival,
+		bottomLine,
+	)
+
+	style := blurredStyle.Width(width)
+	if index == m.resultIndex {
+		style = focusedStyle.Width(width)
+	}
+
+	return style.Render(content)
+}
+
 func (m model) renderWalkSection(section models.Section) []string {
 	var lines []string
 
@@ -960,12 +999,17 @@ func truncateString(s string, maxLen int) string {
 }
 
 func (m model) renderSimpleConnection(c models.Connection, index int, width int) string {
-	firstVehicle := 0
+	firstVehicle := -1 // -1 for walk-only journeys, there isn't always a vehicle
 	for x := range c.Sections {
 		if c.Sections[x].Journey != nil {
 			firstVehicle = x
 			break
 		}
+	}
+
+	// Walk only journey
+	if firstVehicle == -1 {
+		return m.renderSimpleWalkConnection(c, index, width)
 	}
 
 	vehicleIcon := noStyle.Background(sbbBlue).Foreground(sbbWhite).Render(" " + m.icons.vhc + " ")
