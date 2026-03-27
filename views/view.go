@@ -879,7 +879,7 @@ func getGoogleMapsURL(s models.Section) string {
 		dep.X, dep.Y, arr.X, arr.Y)
 }
 
-// rendering Walk-only rides
+// rendering Walk-only Journey
 func (m model) renderSimpleWalkConnection(c models.Connection, index int, width int) string {
 	dep := c.FromData.Departure.Local().Format("15:04")
 	arr := c.ToData.Arrival.Local().Format("15:04")
