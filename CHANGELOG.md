@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/Necrom4/sbb-tui/compare/v1.8.1...v1.8.2) (2026-03-28)
+
+
+### Bug Fixes
+
+* change string according to diagnostics ([ea98295](https://github.com/Necrom4/sbb-tui/commit/ea982954bbb50689674cab768513332e77b6c6e4))
+
 ## [1.8.1](https://github.com/Necrom4/sbb-tui/compare/v1.8.0...v1.8.1) (2026-03-28)
 
 
