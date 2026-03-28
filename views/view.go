@@ -158,24 +158,26 @@ type iconSet struct {
 func newIconSet(noNerdFont bool) iconSet {
 	icons := iconSet{
 		// Shared symbols
-		twrds:     "→",
+		plt:   "Pl.",
+		twrds: "→",
+
 		filledDot: "●",
 		hollowDot: "○",
 		horzLine:  "─",
 		vertLine:  "│",
-		keyTab:    "⇥",
-		keyEnter:  "↵",
-		keySpace:  "␣",
-		keyUpDw:   "↕",
-		keyUPDW:   "⇧↕",
-		keyRight:  "→",
-		keyEsc:    "⎋",
+
+		keyTab:   "⇥",
+		keyEnter: "↵",
+		keySpace: "␣",
+		keyUpDw:  "↕",
+		keyUPDW:  "⇧↕",
+		keyRight: "→",
+		keyEsc:   "⎋",
 	}
 
 	if noNerdFont {
 		icons.arr = "↘"
 		icons.dpt = "↗"
-		icons.plt = "Pl."
 		icons.srch = "⌕"
 		icons.swp = "⇋"
 		icons.vhc = "×"
@@ -184,7 +186,6 @@ func newIconSet(noNerdFont bool) iconSet {
 	} else {
 		icons.arr = "󰗔"
 		icons.dpt = ""
-		icons.plt = "󱀓"
 		icons.srch = ""
 		icons.swp = ""
 		icons.vhc = ""
@@ -913,20 +914,21 @@ func (m model) renderWalkSection(section models.Section) []string {
 	if section.Walk != nil {
 		dur := section.Walk.Duration
 		if dur > 0 {
-			walkDuration = fmt.Sprintf("%d min", dur/60)
+			walkDuration = fmt.Sprintf("%d", dur/60)
 		} else {
 			depTime := section.Departure.Departure.Time
 			arrTime := section.Arrival.Arrival.Time
 			if !depTime.IsZero() && !arrTime.IsZero() {
-				walkDuration = fmt.Sprintf("%d min", int(arrTime.Sub(depTime).Minutes()))
+				walkDuration = fmt.Sprintf("%d", int(arrTime.Sub(depTime).Minutes()))
 			}
 		}
 		url := getGoogleMapsURL(section)
 
+		// TODO: add `` icon and set that as clickable url link instead of the time
 		walkDuration = utils.RenderLink(walkDuration, url)
 	}
 
-	walkLine := fmt.Sprintf("           %s %s", m.icons.wlk, walkDuration)
+	walkLine := fmt.Sprintf("           %s %s'", m.icons.wlk, walkDuration)
 	lines = append(lines, walkLine)
 
 	return lines
@@ -942,7 +944,7 @@ func (m model) formatStationLine(timeStr string, delay int, symbol, station, pla
 
 	delayPart := ""
 	if delay > 0 {
-		delayStr := fmt.Sprintf("+%d", delay)
+		delayStr := fmt.Sprintf("+%d'", delay)
 		delayPart = m.styles.warningBold.Render(fmt.Sprintf("%*s", delayCol, delayStr))
 	} else {
 		delayPart = strings.Repeat(" ", delayCol)
@@ -1087,7 +1089,7 @@ func formatDuration(duration string) string {
 	minutes := parts[1]
 	if len(parts[0]) > 3 && parts[0][3:] != "00" {
 		hours := parts[0][3:]
-		return hours + "h " + minutes + "m"
+		return hours + " h " + minutes + " min"
 	}
 	return minutes + " min"
 }
