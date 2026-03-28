@@ -10,9 +10,7 @@ import (
 
 type Theme struct {
 	Primary    string `yaml:"primary"`
-	Secondary  string `yaml:"secondary"`
 	Text       string `yaml:"text"`
-	Background string `yaml:"background"`
 	Border     string `yaml:"border"`
 	Muted      string `yaml:"muted"`
 	Vehicle    string `yaml:"vehicle"`
@@ -28,9 +26,7 @@ type FileConfig struct {
 func DefaultTheme() Theme {
 	return Theme{
 		Primary:    "#D82E20",
-		Secondary:  "#B52C24",
 		Text:       "#FFFFFF",
-		Background: "#141414",
 		Border:     "#862010",
 		Muted:      "#888888",
 		Vehicle:    "#315086",
@@ -77,14 +73,8 @@ func mergeTheme(base Theme, override Theme) Theme {
 	if override.Primary != "" {
 		base.Primary = override.Primary
 	}
-	if override.Secondary != "" {
-		base.Secondary = override.Secondary
-	}
 	if override.Text != "" {
 		base.Text = override.Text
-	}
-	if override.Background != "" {
-		base.Background = override.Background
 	}
 	if override.Border != "" {
 		base.Border = override.Border
