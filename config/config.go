@@ -29,13 +29,13 @@ type Theme struct {
 	ActiveBorder   string `yaml:"activeBorder"`
 	InactiveBorder string `yaml:"inactiveBorder"`
 	DimmedBorder   string `yaml:"dimmedBorder"`
-	WarningFlag    string `yaml:"warning"`
+	WarningFlag    string `yaml:"warningFlag"`
 	KeysFg         string `yaml:"keysFg"`
 	KeysBg         string `yaml:"keysBg"`
 	VehicleFg      string `yaml:"vehicleFg"`
 	VehicleBg      string `yaml:"vehicleBg"`
-	ModelFg        string `yaml:"ModelFg"`
-	ModelBg        string `yaml:"ModelBg"`
+	ModelFg        string `yaml:"modelFg"`
+	ModelBg        string `yaml:"modelBg"`
 	CompanyFg      string `yaml:"companyFg"`
 	CompanyBg      string `yaml:"companyBg"`
 	Logo           string `yaml:"logo"`
@@ -137,8 +137,17 @@ func mergeTheme(base Theme, override Theme) Theme {
 	if override.VehicleBg != "" {
 		base.VehicleBg = override.VehicleBg
 	}
+	if override.ModelFg != "" {
+		base.ModelFg = override.ModelFg
+	}
+	if override.ModelBg != "" {
+		base.ModelBg = override.ModelBg
+	}
 	if override.CompanyFg != "" {
 		base.CompanyFg = override.CompanyFg
+	}
+	if override.CompanyBg != "" {
+		base.CompanyBg = override.CompanyBg
 	}
 	if override.Logo != "" {
 		base.Logo = override.Logo
