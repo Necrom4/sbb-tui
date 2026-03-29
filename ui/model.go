@@ -137,4 +137,4 @@ func NewModel(cfg config.Config) appModel {
 }
 
 // Init implements tea.Model.
-func (m appModel) Init() tea.Cmd { return nil }
+func (m appModel) Init() tea.Cmd { return textinput.Blink }
