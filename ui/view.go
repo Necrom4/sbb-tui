@@ -102,7 +102,11 @@ func (m appModel) renderHelpBar() string {
 		parts = append(parts, m.styles.helpKey.Render(k.key)+" "+m.styles.helpDesc.Render(k.desc))
 	}
 
-	return " " + strings.Join(parts, "   ")
+	left := " " + strings.Join(parts, "   ")
+	right := fmt.Sprintf("SBB-TUI %s", m.currentVersion)
+
+	gap := max(1, m.width-lipgloss.Width(left)-lipgloss.Width(right))
+	return left + strings.Repeat(" ", gap-1) + m.styles.ghostText.Render(right)
 }
 
 func (m appModel) renderHeaderItem(idx int) string {
