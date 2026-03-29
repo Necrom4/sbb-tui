@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/ansi"
+	"github.com/necrom4/sbb-tui/util"
 )
 
 var (
@@ -184,9 +185,8 @@ func (m appModel) renderStartScreen() string {
 	block := lipgloss.JoinVertical(lipgloss.Center, text, "", coloredLogo)
 
 	if m.newerVersion != "" {
-		url := "https://github.com/Necrom4/sbb-tui/releases/latest"
 		label := fmt.Sprintf("Update available: %s", m.newerVersion)
-		link := renderLink(label, url)
+		link := renderLink(label, util.LatestUrl)
 		block = lipgloss.JoinVertical(lipgloss.Center, block, "", m.styles.active.Render(link))
 	}
 
