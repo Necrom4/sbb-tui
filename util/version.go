@@ -13,10 +13,10 @@ type releaseResponse struct {
 	TagName string `json:"tag_name"`
 }
 
-var LatestUrl = "https://api.github.com/repos/Necrom4/sbb-tui/releases/latest"
+var latestReleaseURL = "https://api.github.com/repos/Necrom4/sbb-tui/releases/latest"
 
-func LatestVersion() (string, error) {
-	req, err := http.NewRequest(http.MethodGet, LatestUrl, nil)
+func latestVersion() (string, error) {
+	req, err := http.NewRequest(http.MethodGet, latestReleaseURL, nil)
 	if err != nil {
 		return "", err
 	}
@@ -48,7 +48,7 @@ func NewerVersion(current string) (string, error) {
 		return "", nil
 	}
 
-	latest, err := LatestVersion()
+	latest, err := latestVersion()
 	if err != nil {
 		return "", err
 	}
