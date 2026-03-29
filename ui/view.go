@@ -185,12 +185,13 @@ func (m appModel) renderStartScreen() string {
 
 	text := m.styles.ghostText.Render("Enter stations above to see timetables")
 
-	newerVersion := m.styles.active.Render(fmt.Sprintf("Update available: %s", m.newerVersion))
-
 	block := lipgloss.JoinVertical(lipgloss.Center, text, "", coloredLogo)
 
 	if m.newerVersion != "" {
-		block = lipgloss.JoinVertical(lipgloss.Center, block, "", newerVersion)
+		url := "https://github.com/Necrom4/sbb-tui/releases/latest"
+		label := fmt.Sprintf("Update available: %s", m.newerVersion)
+		link := ansi.SetHyperlink(url) + label + ansi.ResetHyperlink()
+		block = lipgloss.JoinVertical(lipgloss.Center, block, "", m.styles.active.Render(link))
 	}
 
 	width := max(m.contentWidth()-borderSize-(resultMargin*2), 0)
