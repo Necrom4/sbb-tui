@@ -141,6 +141,10 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.errorMsg = "No connections found for the specified route."
 		}
 		return m, nil
+
+	case versionCheckMsg:
+		m.newerVersion = msg.newerVersion
+		return m, nil
 	}
 
 	cmd := m.updateInputs(msg)

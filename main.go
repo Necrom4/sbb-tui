@@ -9,7 +9,6 @@ import (
 
 	"github.com/necrom4/sbb-tui/config"
 	"github.com/necrom4/sbb-tui/ui"
-	"github.com/necrom4/sbb-tui/util"
 )
 
 // version is set at build time via ldflags.
@@ -47,11 +46,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	latest, err := util.NewerVersion(version)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "warning: could not check for update:", err)
-	}
-
 	cfg := config.Config{
 		From:           *from,
 		To:             *to,
@@ -61,7 +55,6 @@ func main() {
 		NoNerdFont:     *noNerdFont,
 		Theme:          theme,
 		CurrentVersion: version,
-		NewerVersion:   latest,
 	}
 
 	m := ui.NewModel(cfg)

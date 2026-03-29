@@ -9,6 +9,7 @@ import (
 
 	"github.com/necrom4/sbb-tui/config"
 	"github.com/necrom4/sbb-tui/model"
+	"github.com/necrom4/sbb-tui/util"
 )
 
 const (
@@ -38,6 +39,10 @@ const suggestDebounce = 300 * time.Millisecond
 type suggestTickMsg struct {
 	inputIndex int
 	seq        int
+}
+
+type versionCheckMsg struct {
+	newerVersion string
 }
 
 type appModel struct {
@@ -81,7 +86,6 @@ func NewModel(cfg config.Config) appModel {
 		noNerdFont:     cfg.NoNerdFont,
 		isArrivalTime:  cfg.IsArrivalTime,
 		currentVersion: cfg.CurrentVersion,
-		newerVersion:   cfg.NewerVersion,
 	}
 
 	now := time.Now()
@@ -137,4 +141,13 @@ func NewModel(cfg config.Config) appModel {
 }
 
 // Init implements tea.Model.
-func (m appModel) Init() tea.Cmd { return textinput.Blink }
+func (m appModel) Init() tea.Cmd {
+	return tea.Batch(textinput.Blink, checkVersionCmd(m.currentVersion))
+}
+
+func checkVersionCmd(current string) tea.Cmd {
+	return func() tea.Msg {
+		newer, _ := util.NewerVersion(current)
+		return versionCheckMsg{newerVersion: newer}
+	}
+}
