@@ -3,6 +3,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -68,7 +69,7 @@ func DefaultTheme() Theme {
 func configFilePath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("resolving config path: %w", err)
 	}
 
 	// Prefer $HOME/.config/
@@ -91,7 +92,7 @@ func LoadTheme() (Theme, error) {
 
 	path, err := configFilePath()
 	if err != nil {
-		return theme, err
+		return theme, fmt.Errorf("loading theme: %w", err)
 	}
 
 	data, err := os.ReadFile(path)
@@ -99,12 +100,12 @@ func LoadTheme() (Theme, error) {
 		if errors.Is(err, os.ErrNotExist) {
 			return theme, nil
 		}
-		return theme, err
+		return theme, fmt.Errorf("loading theme: reading %s: %w", path, err)
 	}
 
 	var cfg fileConfig
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return theme, err
+		return theme, fmt.Errorf("loading theme: parsing %s: %w", path, err)
 	}
 
 	// NOTE: update mergeTheme when adding new Theme fields.

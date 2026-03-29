@@ -146,8 +146,8 @@ func (m appModel) renderResults() string {
 		return "\n  Searching connections..."
 	}
 
-	if m.errorMsg != "" {
-		return "\n  " + m.styles.warning.Render(m.errorMsg)
+	if m.errorMsg != nil {
+		return "\n  " + m.styles.warning.Render(userError(m.errorMsg))
 	}
 
 	if len(m.connections) == 0 {

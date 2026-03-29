@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -22,6 +24,14 @@ type focusable struct {
 	id    string
 	index int
 }
+
+// User-facing error messages shown in the TUI.
+var (
+	errNoConnections       = errors.New("no connections found for the specified route")
+	errMissingDeparture    = errors.New("please enter a departure station")
+	errMissingArrival      = errors.New("please enter an arrival station")
+	errConnectionMalformed = errors.New("connection details unavailable")
+)
 
 type dataMsg struct {
 	connections []model.Connection
@@ -59,7 +69,7 @@ type appModel struct {
 	isArrivalTime  bool
 	connections    []model.Connection
 	loading        bool
-	errorMsg       string
+	errorMsg       error
 	searched       bool
 	lastFromQuery  string
 	lastToQuery    string
@@ -150,4 +160,27 @@ func checkVersionCmd(current string) tea.Cmd {
 		newer, _ := util.NewerVersion(current)
 		return versionCheckMsg{newerVersion: newer}
 	}
+}
+
+// userError formats an error for display in the TUI.
+func userError(err error) string {
+	if errors.Is(err, errNoConnections) ||
+		errors.Is(err, errMissingDeparture) ||
+		errors.Is(err, errMissingArrival) ||
+		errors.Is(err, errConnectionMalformed) {
+		return capitalise(err.Error())
+	}
+	return fmt.Sprintf("Something went wrong: %v", err)
+}
+
+// capitalise uppercases the first rune.
+func capitalise(s string) string {
+	if s == "" {
+		return s
+	}
+	r := []rune(s)
+	if r[0] >= 'a' && r[0] <= 'z' {
+		r[0] -= 'a' - 'A'
+	}
+	return string(r)
 }

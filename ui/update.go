@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -34,7 +34,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			if err := m.validateInputs(); err != nil {
-				m.errorMsg = err.Error()
+				m.errorMsg = err
 				m.connections = nil
 				m.searched = false
 				m.resultIndex = 0
@@ -42,7 +42,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.loading = true
 			m.connections = nil
-			m.errorMsg = ""
+			m.errorMsg = nil
 			m.searched = true
 			return m, m.searchCmd()
 
@@ -57,7 +57,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.isArrivalTime = !m.isArrivalTime
 			case "search":
 				if err := m.validateInputs(); err != nil {
-					m.errorMsg = err.Error()
+					m.errorMsg = err
 					m.connections = nil
 					m.searched = false
 					m.resultIndex = 0
@@ -65,7 +65,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				m.loading = true
 				m.connections = nil
-				m.errorMsg = ""
+				m.errorMsg = nil
 				m.searched = true
 				return m, m.searchCmd()
 			}
@@ -131,14 +131,14 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case dataMsg:
 		m.loading = false
 		if msg.err != nil {
-			m.errorMsg = "Failed to fetch connections. Check your internet connection."
+			m.errorMsg = fmt.Errorf("failed to fetch connections: %w", msg.err)
 			return m, nil
 		}
 		m.connections = msg.connections
 		m.resultIndex = 0
 		m.detailScrollY = 0
 		if len(m.connections) == 0 {
-			m.errorMsg = "No connections found for the specified route."
+			m.errorMsg = errNoConnections
 		}
 		return m, nil
 
@@ -290,10 +290,10 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 
 func (m appModel) validateInputs() error {
 	if m.inputs[0].Value() == "" {
-		return errors.New("please enter a departure station")
+		return errMissingDeparture
 	}
 	if m.inputs[1].Value() == "" {
-		return errors.New("please enter an arrival station")
+		return errMissingArrival
 	}
 	return nil
 }

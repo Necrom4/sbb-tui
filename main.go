@@ -38,7 +38,7 @@ func main() {
 
 	theme, err := config.LoadTheme()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "warning: could not load config:", err)
+		fmt.Fprintf(os.Stderr, "warning: could not load config: %v\n", err)
 	}
 
 	if *showVersion {
@@ -60,7 +60,7 @@ func main() {
 	m := ui.NewModel(cfg)
 
 	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
-		fmt.Fprintln(os.Stderr, "could not run program:", err)
+		fmt.Println("fatal:", err)
 		os.Exit(1)
 	}
 }

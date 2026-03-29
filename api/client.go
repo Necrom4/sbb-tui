@@ -27,13 +27,17 @@ func FetchLocations(query string) ([]string, error) {
 
 	resp, err := http.Get(apiURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching locations: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("fetching locations: API returned %s", resp.Status)
+	}
+
 	var result locationsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching locations: decoding response: %w", err)
 	}
 
 	names := make([]string, 0, len(result.Stations))
@@ -74,13 +78,17 @@ func FetchConnections(from, to, date, timeStr string, isArrivalTime bool, limit 
 
 	resp, err := http.Get(apiURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching connections: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("fetching connections: API returned %s", resp.Status)
+	}
+
 	var result connectionsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching connections: decoding response: %w", err)
 	}
 
 	return result.Connections, nil
