@@ -42,7 +42,7 @@ func main() {
 	}
 
 	if *showVersion {
-		fmt.Printf("sbb-tui v%s\n", version)
+		fmt.Printf("sbb-tui %s\n", version)
 		os.Exit(0)
 	}
 
