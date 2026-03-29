@@ -105,16 +105,33 @@ func (m appModel) renderHelpBar() string {
 	}
 
 	left := " " + strings.Join(parts, "   ")
-	right := fmt.Sprintf("SBB-TUI %s", m.currentVersion)
+	current := fmt.Sprintf("SBB-TUI %s", m.currentVersion)
+	right := ""
 
-	if m.newerVersion != "" {
-		link := renderLink(m.newerVersion, latestReleaseUrl)
-		label := m.styles.warning.Render(fmt.Sprintf("(latest: %s)", link))
-		right = fmt.Sprintf("%s %s", right, label)
+	minGap := 2
+	spaceForRight := m.width - lipgloss.Width(left)
+	if spaceForRight > minGap {
+		currentWidth := lipgloss.Width(current)
+		if m.newerVersion != "" {
+			link := renderLink(m.newerVersion, latestReleaseUrl)
+			latest := m.styles.warning.Render(fmt.Sprintf("(latest: %s)", link))
+			withLatest := fmt.Sprintf("%s %s", current, latest)
+			if lipgloss.Width(withLatest)+minGap <= spaceForRight {
+				right = withLatest
+			}
+		}
+
+		if right == "" && currentWidth+minGap <= spaceForRight {
+			right = current
+		}
 	}
 
-	gap := max(1, m.width-lipgloss.Width(left)-lipgloss.Width(right))
-	return left + strings.Repeat(" ", gap-1) + m.styles.ghostText.Render(right)
+	if right == "" {
+		return left
+	}
+
+	gap := m.width - lipgloss.Width(left) - lipgloss.Width(right)
+	return left + strings.Repeat(" ", gap) + m.styles.ghostText.Render(right)
 }
 
 func (m appModel) renderHeaderItem(idx int) string {
