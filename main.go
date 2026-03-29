@@ -60,7 +60,7 @@ func main() {
 		IsArrivalTime:  *arrival,
 		NoNerdFont:     *noNerdFont,
 		Theme:          theme,
-		CurrentVersion: "v1.8.0",
+		CurrentVersion: version,
 		NewerVersion:   latest,
 	}
 
