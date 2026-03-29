@@ -1,3 +1,10 @@
+## [1.11.2](https://github.com/Necrom4/sbb-tui/compare/v1.11.1...v1.11.2) (2026-03-29)
+
+
+### Bug Fixes
+
+* normalize error handling to Bubbletea/Go conventions ([eb65ea6](https://github.com/Necrom4/sbb-tui/commit/eb65ea65fdbaa7062846182bd31ea78562098881))
+
 ## [1.11.1](https://github.com/Necrom4/sbb-tui/compare/v1.11.0...v1.11.1) (2026-03-29)
 
 
