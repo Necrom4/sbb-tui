@@ -46,7 +46,7 @@ go build
 
 Add your optional config at `$HOME/.config/sbb-tui/config.yaml`
 
-OS default config paths are also supported (such as `~/Library/Application Support/sbb-tui/config.yaml` in macOS)
+> OS default config paths are also supported (such as `~/Library/Application Support/sbb-tui/config.yaml` in macOS)
 
 ```yaml
 # default configuration
@@ -68,6 +68,8 @@ theme:
   companyBg:      "#FFFFFF"
   logo:           "#FFFFFF"
 ```
+
+More **themes** can be found at [docs/themes.md](https://github.com/Necrom4/sbb-tui/blob/master/docs/themes.md)
 
 ## 🚩 Options
 
