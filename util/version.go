@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"golang.org/x/mod/semver"
 )
 
 type releaseResponse struct {
@@ -39,4 +41,33 @@ func LatestVersion() (string, error) {
 	}
 
 	return release.TagName, nil
+}
+
+func NewerVersion(current string) (string, error) {
+	if current == "dev" {
+		return "", nil
+	}
+
+	latest, err := LatestVersion()
+	if err != nil {
+		return "", err
+	}
+
+	latestValid := semver.IsValid(latest)
+	if !latestValid {
+		return "", fmt.Errorf("latest version is not valid: %s", latest)
+	}
+
+	currentValid := semver.IsValid(current)
+	if !currentValid {
+		return "", fmt.Errorf("current version is not valid: %s", current)
+	}
+
+	cmp := semver.Compare(current, latest)
+
+	if cmp < 0 {
+		return latest, nil
+	}
+
+	return "", nil
 }
