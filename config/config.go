@@ -19,6 +19,7 @@ type Config struct {
 	NoNerdFont     bool
 	Theme          Theme
 	CurrentVersion string
+	NewerVersion   string
 }
 
 type fileConfig struct {
