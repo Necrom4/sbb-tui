@@ -185,9 +185,9 @@ func (m appModel) renderStartScreen() string {
 	block := lipgloss.JoinVertical(lipgloss.Center, text, "", coloredLogo)
 
 	if m.newerVersion != "" {
-		label := fmt.Sprintf("Update available: %s", m.newerVersion)
-		link := renderLink(label, util.LatestUrl)
-		block = lipgloss.JoinVertical(lipgloss.Center, block, "", m.styles.active.Render(link))
+		link := renderLink(m.newerVersion, util.LatestUrl)
+		label := fmt.Sprintf("Update available: %s", link)
+		block = lipgloss.JoinVertical(lipgloss.Center, block, "", m.styles.active.Render(label))
 	}
 
 	width := max(m.contentWidth()-borderSize-(resultMargin*2), 0)
