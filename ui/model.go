@@ -60,6 +60,7 @@ type appModel struct {
 	lastToQuery    string
 	suggestSeq     [2]int
 	currentVersion string
+	newerVersion   string
 }
 
 // NewModel creates the initial Bubbletea model from the application config.
@@ -80,6 +81,7 @@ func NewModel(cfg config.Config) appModel {
 		noNerdFont:     cfg.NoNerdFont,
 		isArrivalTime:  cfg.IsArrivalTime,
 		currentVersion: cfg.CurrentVersion,
+		newerVersion:   cfg.NewerVersion,
 	}
 
 	now := time.Now()

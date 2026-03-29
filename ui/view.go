@@ -185,7 +185,13 @@ func (m appModel) renderStartScreen() string {
 
 	text := m.styles.ghostText.Render("Enter stations above to see timetables")
 
+	newerVersion := m.styles.active.Render(fmt.Sprintf("Update available: %s", m.newerVersion))
+
 	block := lipgloss.JoinVertical(lipgloss.Center, text, "", coloredLogo)
+
+	if m.newerVersion != "" {
+		block = lipgloss.JoinVertical(lipgloss.Center, block, "", newerVersion)
+	}
 
 	width := max(m.contentWidth()-borderSize-(resultMargin*2), 0)
 	height := m.resultsHeight()
