@@ -47,13 +47,14 @@ func main() {
 	}
 
 	cfg := config.Config{
-		From:          *from,
-		To:            *to,
-		Date:          *date,
-		Time:          *timeStr,
-		IsArrivalTime: *arrival,
-		NoNerdFont:    *noNerdFont,
-		Theme:         theme,
+		From:           *from,
+		To:             *to,
+		Date:           *date,
+		Time:           *timeStr,
+		IsArrivalTime:  *arrival,
+		NoNerdFont:     *noNerdFont,
+		Theme:          theme,
+		CurrentVersion: version,
 	}
 
 	m := ui.NewModel(cfg)

@@ -11,13 +11,14 @@ import (
 
 // Config holds CLI flag values to pre-fill the TUI form.
 type Config struct {
-	From          string
-	To            string
-	Date          string
-	Time          string
-	IsArrivalTime bool
-	NoNerdFont    bool
-	Theme         Theme
+	From           string
+	To             string
+	Date           string
+	Time           string
+	IsArrivalTime  bool
+	NoNerdFont     bool
+	Theme          Theme
+	CurrentVersion string
 }
 
 type fileConfig struct {
