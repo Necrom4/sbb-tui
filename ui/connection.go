@@ -50,7 +50,12 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 		}
 
 		if !isLast {
-			lines = append(lines, "", "")
+			hasArrDelay := section.Journey != nil && section.Arrival.Delay > 0
+			if hasArrDelay {
+				lines = append(lines, "")
+			} else {
+				lines = append(lines, "", "")
+			}
 		}
 	}
 
