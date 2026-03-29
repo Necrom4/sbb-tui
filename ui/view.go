@@ -190,7 +190,7 @@ func (m appModel) renderStartScreen() string {
 	if m.newerVersion != "" {
 		url := "https://github.com/Necrom4/sbb-tui/releases/latest"
 		label := fmt.Sprintf("Update available: %s", m.newerVersion)
-		link := ansi.SetHyperlink(url) + label + ansi.ResetHyperlink()
+		link := renderLink(label, url)
 		block = lipgloss.JoinVertical(lipgloss.Center, block, "", m.styles.active.Render(link))
 	}
 
