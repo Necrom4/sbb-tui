@@ -29,7 +29,7 @@ func FetchLocations(query string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var result locationsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -76,7 +76,7 @@ func FetchConnections(from, to, date, timeStr string, isArrivalTime bool, limit 
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var result connectionsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
