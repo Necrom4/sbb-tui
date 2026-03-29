@@ -91,7 +91,7 @@ Flags:
 
 ## ❓ Why
 
-> I often work in the train, passing through remote regions of Switzerland where I'll have to wait up to an entire minute to finally be able to load the SBB website/app and get the much needed information about my next connection (I have a cheap cellular data subscription). Someday I fell onto the incredible [Swiss public transport API](https://transport.opendata.ch/docs.html) and decided it was the perfect occasion to learn how to create TUIs.
+> I travel 4 hours a day and often work from the train, passing through remote regions of Switzerland where loading the SBB website alone can take up to an entire minute before I've even had a chance to search for my next connection (back when I started building this, my cellular data plan provided me with 500kb/s at most in the city). On top of that, I love open source and disliked handing data over to corporations unnecessarily, so I loved the idea of a faster solution that only fetched the necessary data, the one I requested. One day, while exploring the idea of building my first TUI, I stumbled upon the incredible [Swiss public transport API](https://transport.opendata.ch/docs.html) and I knew I'd found the perfect occasion to start!
 
 ## 🍻 HELP WANTED!
 
