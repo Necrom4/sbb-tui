@@ -1,0 +1,9 @@
+version: "2"
+
+linters:
+  enable:
+    - revive
+  settings:
+    revive:
+      rules:
+        - name: exported
