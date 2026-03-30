@@ -99,8 +99,8 @@ func (m appModel) renderJourneySection(section model.Section, width, labelCol, p
 	spacingLine := fmt.Sprintf("%s  %s", indent, m.icons.vertLine)
 
 	if depDelay > 0 {
-		delayStr := m.styles.warningBold.Render(fmt.Sprintf("%*s", timeCol, fmt.Sprintf("+%d", depDelay)))
-		lines = append(lines, fmt.Sprintf("%s  %s", delayStr, m.styles.bold.Render(m.icons.vertLine)))
+		delayStr := m.styles.warningBold.Render(fmt.Sprintf("%*s'", timeCol, fmt.Sprintf("+%d", depDelay)))
+		lines = append(lines, fmt.Sprintf("%s %s", delayStr, m.styles.bold.Render(m.icons.vertLine)))
 	} else {
 		lines = append(lines, spacingLine)
 	}
@@ -130,7 +130,7 @@ func (m appModel) renderJourneySection(section model.Section, width, labelCol, p
 	lines = append(lines, arrLine)
 
 	if arrDelay > 0 {
-		delayStr := m.styles.warningBold.Render(fmt.Sprintf("%*s", timeCol, fmt.Sprintf("+%d", arrDelay)))
+		delayStr := m.styles.warningBold.Render(fmt.Sprintf("%*s'", timeCol, fmt.Sprintf("+%d", arrDelay)))
 		lines = append(lines, delayStr)
 	}
 
@@ -271,10 +271,19 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 		}
 	}
 
+	depGap := "  "
+	if departureDelay != "" {
+		depGap = " "
+	}
+	arrGap := "  "
+	if arrivalDelay != "" {
+		arrGap = " "
+	}
+
 	timelineFixedWidth := lipgloss.Width(timelinePrefix) +
 		lipgloss.Width(departure) +
-		lipgloss.Width(departureDelay) + 2 +
-		2 +
+		lipgloss.Width(departureDelay) + len(depGap) +
+		len(arrGap) +
 		lipgloss.Width(arrival) +
 		lipgloss.Width(arrivalDelay)
 	stopsLineWidth := max(lineContentWidth-timelineFixedWidth, stopsLineMinWidth)
@@ -300,7 +309,7 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 
 	bottomLinePadding := max(lineContentWidth-lipgloss.Width(platformInfo)-lipgloss.Width(duration), 1)
 
-	content := fmt.Sprintf("\n  %s %s %s  %s\n\n  %s%s%s  %s  %s%s\n\n  %s%s%v\n",
+	content := fmt.Sprintf("\n  %s %s %s  %s\n\n  %s%s%s%s%s%s%s%s\n\n  %s%s%v\n",
 		vehicleIcon,
 		vehicleModel,
 		company,
@@ -308,7 +317,9 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 		timelinePrefix,
 		departure,
 		departureDelay,
+		depGap,
 		stopsLine,
+		arrGap,
 		arrival,
 		arrivalDelay,
 		platformInfo,
@@ -337,7 +348,7 @@ func formatDuration(duration string) string {
 
 func (m appModel) formatDelay(delay int) string {
 	if delay > 0 {
-		return m.styles.warningBold.Render(fmt.Sprintf(" +%d", delay))
+		return m.styles.warningBold.Render(fmt.Sprintf(" +%d'", delay))
 	}
 	return ""
 }
