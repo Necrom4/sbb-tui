@@ -5,17 +5,17 @@ TUI client for Switzerland's public transports timetables, inspired by the SBB/C
 <img width="1382" height="1054" alt="Bildschirmfoto 2026-03-01 um 11 43 00" src="https://github.com/user-attachments/assets/f3600847-50ce-418b-b682-5249ee00ab6f" />
 
 ## Table of Contents
-- [🚀 Features](#-features)
-- [📦 Install](#-install)
+- [🚀 Features](#features)
+- [📦 Install](#install)
   - [macOS (homebrew)](#macos-homebrew)
   - [go](#go)
   - [AUR](#aur)
   - [Build from source](#build-from-source)
-- [🚀 Usage](#-usage)
-- [⚙️ Configuration](#️-configuration)
-- [🚩 Options](#-options)
-- [❓ Why](#-why)
-- [🍻 HELP WANTED!](#-help-wanted)
+- [🚀 Usage](#usage)
+- [⚙️ Configuration](#configuration)
+- [🚩 Options](#options)
+- [❓ Why](#why)
+- [🍻 HELP WANTED!](#help-wanted)
 - [Star History](#star-history)
 
 ## 🚀 Features
