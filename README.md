@@ -25,15 +25,15 @@ brew install necrom4/tap/sbb-tui
 ```sh
 go install github.com/necrom4/sbb-tui
 ```
+
 ### AUR
 ```sh
 yay -S sbb-tui # or equivalent AUR package manager
 ```
+> [!NOTE]
+> OR download your preferred executable from [Releases](https://github.com/Necrom4/sbb-tui/releases) directly.
 
-> or download your preferred executable from [Releases](https://github.com/Necrom4/sbb-tui/releases)
-
-## Build from source
-
+### Build from source
 ```sh
 git clone https://github.com/necrom4/sbb-tui.git
 cd sbb-tui
@@ -51,6 +51,7 @@ go build
 
 Add your optional config at `$HOME/.config/sbb-tui/config.yaml`
 
+> [!TIP]
 > OS default config paths are also supported (such as `~/Library/Application Support/sbb-tui/config.yaml` in macOS)
 
 ```yaml
@@ -73,7 +74,7 @@ theme:
   logo:           "#FFFFFF"
 ```
 
-More **themes** can be found at [docs/themes.md](https://github.com/Necrom4/sbb-tui/blob/master/docs/themes.md)
+> More **themes** can be found at [`docs/themes.md`](https://github.com/Necrom4/sbb-tui/blob/master/docs/themes.md)
 
 ## 🚩 Options
 
@@ -104,7 +105,7 @@ Flags:
 This project is a very good playground for those who want to learn to collaborate in open source projects and improve the way they architecture their code and commit it. Whether you're a novice or a professional, don't be scared to hop on the train!
 
 There's plenty of [Issues](https://github.com/Necrom4/sbb-tui/issues) of different complexity levels, many tagged with `help wanted` or `good first issue`.
-So if you're up for the challenge, read [CONTRIBUTING.md](https://github.com/Necrom4/sbb-tui/blob/master/CONTRIBUTING.md), create your PR, and start coding!
+So if you're up for the challenge, read [`CONTRIBUTING.md`](https://github.com/Necrom4/sbb-tui/blob/master/CONTRIBUTING.md), create your PR, and start coding!
 ## Star History
 
 <a href="https://www.star-history.com/?repos=necrom4%2Fsbb-tui&type=date&legend=top-left">
