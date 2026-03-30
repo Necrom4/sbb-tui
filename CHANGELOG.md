@@ -1,3 +1,13 @@
+## [1.11.5](https://github.com/Necrom4/sbb-tui/compare/v1.11.4...v1.11.5) (2026-03-30)
+
+
+### Bug Fixes
+
+* **ui:** add missing `'` from delay number ([02f1bd6](https://github.com/Necrom4/sbb-tui/commit/02f1bd64512157f73977b27ea4f6dda0e67af171))
+* **ui:** remove arrGap ([117a3c3](https://github.com/Necrom4/sbb-tui/commit/117a3c381b3d98ea0baa13e62a9eb5e7eae41ddd))
+* **ui:** remove extra top and bottom lines around walk section ([b386e38](https://github.com/Necrom4/sbb-tui/commit/b386e38af9a4fdf618d07f25b50d420f7bcb056c))
+* **ui:** replace unicode icons by better (prettier and centered) icons ([a2feffd](https://github.com/Necrom4/sbb-tui/commit/a2feffd6ad51fe8fd1d5c2016a4d6f0ec32cb036))
+
 ## [1.11.4](https://github.com/Necrom4/sbb-tui/compare/v1.11.3...v1.11.4) (2026-03-30)
 
 
