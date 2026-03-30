@@ -12,9 +12,10 @@ TUI client for Switzerland's public transports timetables, inspired by the SBB/C
 - ➡️ **Autocompletion** of station names
 - 🚩 **CLI flags** to pre-fill fields for quick lookups
 - 🧭 Clickable **Google Maps links** for walking sections
-- ⇹  SBB brand **styling** with Nerd Font icons ([Nerd Font](https://www.nerdfonts.com/) recommended, Unicode fallback via `--no-nerdfont`)
+- ⇹ SBB brand **styling** with Nerd Font icons ([Nerd Font](https://www.nerdfonts.com/) recommended, Unicode fallback via `--no-nerdfont`)
 
 # 📚 Documentation
+
 - [Install](#📦-install)
 - [Usage](#🚀-usage)
 - [Configuration](#⚙️-configuration)
@@ -25,23 +26,28 @@ TUI client for Switzerland's public transports timetables, inspired by the SBB/C
 ## 📦 Install
 
 ### Homebrew
+
 ```sh
 brew install necrom4/tap/sbb-tui
 ```
 
 ### Go
+
 ```sh
 go install github.com/necrom4/sbb-tui
 ```
 
 ### AUR
+
 ```sh
 yay -S sbb-tui # or equivalent AUR package manager
 ```
+
 > [!NOTE]
 > Or download your preferred executable from [Releases](https://github.com/Necrom4/sbb-tui/releases) directly.
 
 ### Build from source
+
 ```sh
 git clone https://github.com/necrom4/sbb-tui.git
 cd sbb-tui
@@ -114,6 +120,7 @@ This project is a very good playground for those who want to learn to collaborat
 
 There's plenty of [Issues](https://github.com/Necrom4/sbb-tui/issues) of different complexity levels, many tagged with `help wanted` or `good first issue`.
 So if you're up for the challenge, read [`CONTRIBUTING.md`](https://github.com/Necrom4/sbb-tui/blob/master/CONTRIBUTING.md), create your PR, and start coding!
+
 ## Star History
 
 <a href="https://www.star-history.com/?repos=necrom4%2Fsbb-tui&type=date&legend=top-left">
