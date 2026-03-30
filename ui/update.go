@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"golang.org/x/text/unicode/norm"
 
 	"github.com/necrom4/sbb-tui/api"
 )
@@ -124,7 +127,8 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case suggestionsMsg:
 		if msg.err == nil {
-			m.inputs[msg.inputIndex].SetSuggestions(msg.names)
+			userInput := m.inputs[msg.inputIndex].Value()
+			m.inputs[msg.inputIndex].SetSuggestions(adaptSuggestions(userInput, msg.names))
 		}
 		return m, nil
 
@@ -343,4 +347,66 @@ func (m appModel) searchCmd() tea.Cmd {
 		)
 		return dataMsg{connections: res, err: err}
 	}
+}
+
+// adaptSuggestions grafts the user's input onto the front of each suggestion
+// so that it satisfies the textinput widget's HasPrefix matching.
+// (e.g. "zur" (input) + "Zürich HB" (suggestion) = "zurich HB")
+func adaptSuggestions(userInput string, suggestions []string) []string {
+	if userInput == "" {
+		return suggestions
+	}
+	lower := strings.ToLower(userInput)
+	out := make([]string, 0, len(suggestions))
+	for _, s := range suggestions {
+		idx := prefixMatchLen(strings.ToLower(s), lower)
+		if idx > 0 {
+			out = append(out, userInput+s[idx:])
+		}
+	}
+	return out
+}
+
+// prefixMatchLen returns the offset into `suggestion`
+// that has been fuzzy matched against `input`.
+func prefixMatchLen(suggestion, input string) int {
+	si, ii := 0, 0
+	for si < len(suggestion) && ii < len(input) {
+		sr, sw := utf8.DecodeRuneInString(suggestion[si:])
+		ir, iw := utf8.DecodeRuneInString(input[ii:])
+
+		if sr == ir {
+			si += sw
+			ii += iw
+			continue
+		}
+
+		if !unicode.IsLetter(sr) && !unicode.IsDigit(sr) {
+			si += sw
+			continue
+		}
+
+		if foldRune(sr) == foldRune(ir) {
+			si += sw
+			ii += iw
+			continue
+		}
+
+		// No match
+		return 0
+	}
+
+	if ii < len(input) {
+		return 0 // didn't consume the entire user input
+	}
+	return si
+}
+
+// foldRune strips common diacritics by decomposing to NFD and
+// returning only the first (base) rune.
+// (e.g. ü → u + combining diaeresis)
+func foldRune(r rune) rune {
+	decomposed := norm.NFD.String(string(r))
+	base, _ := utf8.DecodeRuneInString(decomposed)
+	return base
 }
