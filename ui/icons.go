@@ -55,7 +55,7 @@ func newIconSet(noNerdFont bool) iconSet {
 		icons.swap = "↔"
 		icons.vehicle = "◇"
 		icons.walk = "walk:"
-		icons.prompt = "🞂 "
+		icons.prompt = "⏵ "
 	} else {
 		icons.arrival = "󰗔"
 		icons.departure = ""
