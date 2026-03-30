@@ -14,7 +14,7 @@ TUI client for Switzerland's public transports timetables, inspired by the SBB/C
 - 🧭 Clickable **Google Maps links** for walking sections
 - ⇹ SBB brand **styling** with Nerd Font icons ([Nerd Font](https://www.nerdfonts.com/) recommended, Unicode fallback via `--no-nerdfont`)
 
-# 📚 Documentation
+## 📚 Documentation
 
 - [Install](#📦-install)
 - [Usage](#🚀-usage)
