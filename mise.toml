@@ -57,7 +57,7 @@ run = "golangci-lint run"
 description = "Serve godoc at http://localhost:6060"
 quiet = true
 run = '''
-URL="http://localhost:6060/pkg/github.com/necrom4/sbb-tui/"
+URL="http://localhost:6060/pkg/github.com/necrom4/sbb-tui/?m=all"
 echo "Open ${_LINK_START}${URL}${_LINK_SEP}${URL}${_LINK_END}"
 godoc -http=:6060
 '''
