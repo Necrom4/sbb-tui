@@ -1,6 +1,6 @@
 # SBB-TUI
 
-TUI client for Switzerland's public transports timetables, inspidered by the SBB/CFF/FFS [app](https://www.sbb.ch/).
+TUI client for Switzerland's public transports timetables, inspired by the SBB/CFF/FFS [app](https://www.sbb.ch/).
 
 <img width="1382" height="1054" alt="Bildschirmfoto 2026-03-01 um 11 43 00" src="https://github.com/user-attachments/assets/f3600847-50ce-418b-b682-5249ee00ab6f" />
 
@@ -96,7 +96,7 @@ Flags:
 ## 🍻 HELP WANTED!
 
 **SBB-TUI** is in constant improvement thanks to the work of many volunteers passionate about this little tool.
-This project is a very good playground for those who want to learn to collaborate in open source projects and improve the way they architecture their code and commit it. Wether you're a novice or a professional, don't be scared to hop on the train!
+This project is a very good playground for those who want to learn to collaborate in open source projects and improve the way they architecture their code and commit it. Whether you're a novice or a professional, don't be scared to hop on the train!
 
 There's plenty of [Issues](https://github.com/Necrom4/sbb-tui/issues) of different complexity levels, many tagged with `help wanted` or `good first issue`.
 So if you're up for the challenge, read [CONTRIBUTING.md](https://github.com/Necrom4/sbb-tui/blob/master/CONTRIBUTING.md), create your PR, and start coding!
