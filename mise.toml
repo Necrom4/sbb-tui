@@ -7,20 +7,20 @@ pre-commit = "latest"
 
 [env]
 # Styles
-S_RESET = "\u001b[0m"
-S_BOLD = "\u001b[1m"
-S_URL = "\u001b[4m"
+_S_RESET = "\u001b[0m"
+_S_BOLD = "\u001b[1m"
+_S_URL = "\u001b[4m"
 
 # Colors
-C_RED = "\u001b[31m"
-C_GREEN = "\u001b[32m"
-C_MAGENTA = "\u001b[35m"
-C_BLUE = "\u001b[34m"
+_C_RED = "\u001b[31m"
+_C_GREEN = "\u001b[32m"
+_C_MAGENTA = "\u001b[35m"
+_C_BLUE = "\u001b[34m"
 
 # Hyperlink Parts
-LINK_START = "\u001b]8;;"
-LINK_SEP = "\u001b\\"
-LINK_END = "\u001b]8;;\u001b\\"
+_LINK_START = "\u001b]8;;"
+_LINK_SEP = "\u001b\\"
+_LINK_END = "\u001b]8;;\u001b\\"
 
 [tasks.init]
 description = "Install hooks and setup environment"
@@ -58,7 +58,7 @@ description = "Serve godoc at http://localhost:6060"
 quiet = true
 run = '''
 URL="http://localhost:6060/pkg/github.com/necrom4/sbb-tui/"
-echo "Open ${LINK_START}${URL}${LINK_SEP}${URL}${LINK_END}"
+echo "Open ${_LINK_START}${URL}${_LINK_SEP}${URL}${_LINK_END}"
 godoc -http=:6060
 '''
 
@@ -68,17 +68,17 @@ script = """
 missing=$(mise ls --missing --offline | awk '{print $1}' | tr '\n' ' ')
 
 if [ -n "$missing" ]; then
-  echo "${C_RED}[WARNING]${S_RESET}"
-  echo "Tools defined in mise.toml are not installed: ${C_MAGENTA}$missing${S_RESET}"
-  echo "Run '${C_GREEN}mise install${S_RESET}' to set up your environment."
+  echo "${_C_RED}[WARNING]${_S_RESET}"
+  echo "Tools defined in mise.toml are not installed: ${_C_MAGENTA}$missing${_S_RESET}"
+  echo "Run '${_C_GREEN}mise install${_S_RESET}' to set up your environment."
 fi
 """
 
 [[hooks.enter]]
 script = """
 if [ ! -f ".git/hooks/pre-commit" ] || ! grep -q "pre-commit" ".git/hooks/pre-commit"; then
-  echo "${C_RED}[WARNING]${S_RESET}"
-  echo "Git pre-commit ${C_MAGENTA}hooks${S_RESET} not initialized!"
-  echo "Run '${C_GREEN}mise run init${S_RESET}' to enable pre-commit hooks."
+  echo "${_C_RED}[WARNING]${_S_RESET}"
+  echo "Git pre-commit ${_C_MAGENTA}hooks${_S_RESET} not initialized!"
+  echo "Run '${_C_GREEN}mise run init${_S_RESET}' to enable pre-commit hooks."
 fi
 """
