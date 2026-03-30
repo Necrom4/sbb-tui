@@ -50,11 +50,22 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 		}
 
 		if !isLast {
+			nextIsWalk := c.Sections[i+1].Walk != nil
+			currentIsWalk := section.Walk != nil
 			hasArrDelay := section.Journey != nil && section.Arrival.Delay > 0
-			if hasArrDelay {
+			if currentIsWalk {
 				lines = append(lines, "")
+			} else if hasArrDelay {
+				if nextIsWalk {
+				} else {
+					lines = append(lines, "")
+				}
 			} else {
-				lines = append(lines, "", "")
+				if nextIsWalk {
+					lines = append(lines, "")
+				} else {
+					lines = append(lines, "", "")
+				}
 			}
 		}
 	}
