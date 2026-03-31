@@ -1,19 +1,29 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
   - repo: local
     hooks:
-      - id: gofumpt
+      - id: go-mod-tidy
+        name: go mod tidy
+        entry: go mod tidy
+        language: system
+        types: [go]
+      - id: format.go
         name: gofumpt
         entry: gofumpt -w
         language: system
         types: [go]
-      - id: golangci-lint
+      - id: imports.go
+        name: goimports
+        entry: goimports -w .
+        language: system
+        types: [go]
+      - id: lint.go
         name: golangci-lint
         entry: golangci-lint run
         language: system
         types: [go]
         pass_filenames: false
-      - id: goimports
-        name: goimports
-        entry: goimports -w .
-        language: system
-        types: [go]

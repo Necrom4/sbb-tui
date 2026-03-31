@@ -33,13 +33,11 @@ description = "Run a pre-commit hook by id"
 quiet = true
 usage = """
 arg "[hook-id]" help="pre-commit hook id to run"
-complete "hook-id" run="yq eval '.repos[0].hooks[].id' .pre-commit-config.yaml"
+complete "hook-id" run="yq eval '.repos[].hooks[].id' .pre-commit-config.yaml"
 flag "-a --all-files" help="Run on all files"
 flag "--files <files>" help="Specify files to run on"
 """
-run = """
-pre-commit run ${usage_hook_id} ${usage_all_files:+--all-files} ${usage_files:+--files ${usage_files}}
-"""
+run = "pre-commit run ${usage_hook_id} ${usage_all_files:+--all-files} ${usage_files:+--files ${usage_files}}"
 
 [tasks.docs]
 description = "Serve godoc at http://localhost:6060"
