@@ -4,6 +4,7 @@ gofumpt = "latest"
 golangci-lint = "latest"
 pre-commit = "latest"
 "go:golang.org/x/tools/cmd/godoc" = "latest"
+"go:golang.org/x/tools/cmd/goimports" = "latest"
 
 [env]
 # Styles
