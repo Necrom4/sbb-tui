@@ -24,7 +24,7 @@ type Config struct {
 
 // UIConfig groups all UI-related settings.
 type UIConfig struct {
-	NerdFont *bool `yaml:"nerdFont"`
+	NerdFont *bool `yaml:"nerdfont"`
 	Theme    Theme `yaml:"theme"`
 }
 

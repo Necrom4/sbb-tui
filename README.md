@@ -12,7 +12,7 @@ TUI client for Switzerland's public transports timetables, inspired by the SBB/C
 - ➡️ **Autocompletion** of station names
 - 🚩 **CLI flags** to pre-fill fields for quick lookups
 - 🧭 Clickable **Google Maps links** for walking sections
-- ⇹ SBB brand **styling** with Nerd Font icons ([Nerd Font](https://www.nerdfonts.com/) recommended, Unicode fallback via `--nerd-font=false`)
+- ⇹ SBB brand **styling** with Nerd Font icons ([Nerd Font](https://www.nerdfonts.com/) recommended, Unicode fallback via `--nerdfont=false`)
 
 ## 📚 Documentation
 
@@ -71,7 +71,7 @@ Add your optional config at `$HOME/.config/sbb-tui/config.yaml`
 ```yaml
 # default configuration
 ui:
-  nerdFont: true
+  nerdfont: true
   theme:
     text:           "#FFFFFF"
     errorText:      "#D82E20"
@@ -105,7 +105,7 @@ Flags:
       --arrival       Use arrival time instead of departure time
       --date string   Pre-fill date (DD.MM.YYYY)
       --from string   Pre-fill departure station
-      --nerd-font     Use Nerd Font icons (disable with --nerd-font=false) (default true)
+      --nerdfont      Use Nerd Font icons (`=false` fallback to Unicode)
       --time string   Pre-fill time (HH:MM)
       --to string     Pre-fill arrival station
   -v, --version       Print version and exit

@@ -20,7 +20,7 @@ func main() {
 	date := flag.String("date", "", "Pre-fill date (DD.MM.YYYY)")
 	timeStr := flag.String("time", "", "Pre-fill time (HH:MM)")
 	arrival := flag.Bool("arrival", false, "Use arrival time instead of departure time")
-	flag.Bool("nerd-font", true, "Use Nerd Font icons (disable with --nerd-font=false)")
+	flag.Bool("nerdfont", true, "Use Nerd Font icons (disable with --nerdfont=false)")
 	showVersion := flag.BoolP("version", "v", false, "Print version and exit")
 
 	// --help
@@ -54,8 +54,8 @@ func main() {
 	cfg.IsArrivalTime = *arrival
 	cfg.CurrentVersion = version
 
-	if flag.CommandLine.Changed("nerd-font") {
-		nf, _ := flag.CommandLine.GetBool("nerd-font")
+	if flag.CommandLine.Changed("nerdfont") {
+		nf, _ := flag.CommandLine.GetBool("nerdfont")
 		cfg.NerdFont = nf
 	}
 
