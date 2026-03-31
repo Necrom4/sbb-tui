@@ -6,11 +6,6 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
-      - id: go-mod-tidy
-        name: go mod tidy
-        entry: go mod tidy
-        language: system
-        types: [go]
       - id: format.go
         name: gofumpt
         entry: gofumpt -w
