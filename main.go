@@ -20,7 +20,7 @@ func main() {
 	date := flag.String("date", "", "Pre-fill date (DD.MM.YYYY)")
 	timeStr := flag.String("time", "", "Pre-fill time (HH:MM)")
 	arrival := flag.Bool("arrival", false, "Use arrival time instead of departure time")
-	nerdFont := flag.Bool("nerd-font", true, "Use Nerd Font icons (disable with --nerd-font=false)")
+	flag.Bool("nerd-font", true, "Use Nerd Font icons (disable with --nerd-font=false)")
 	showVersion := flag.BoolP("version", "v", false, "Print version and exit")
 
 	// --help
@@ -36,7 +36,7 @@ func main() {
 
 	flag.Parse()
 
-	theme, err := config.LoadTheme()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "warning: could not load config: %v\n", err)
 	}
@@ -46,15 +46,17 @@ func main() {
 		os.Exit(0)
 	}
 
-	cfg := config.Config{
-		From:           *from,
-		To:             *to,
-		Date:           *date,
-		Time:           *timeStr,
-		IsArrivalTime:  *arrival,
-		NerdFont:       *nerdFont,
-		Theme:          theme,
-		CurrentVersion: version,
+	// CLI flags override config file values.
+	cfg.From = *from
+	cfg.To = *to
+	cfg.Date = *date
+	cfg.Time = *timeStr
+	cfg.IsArrivalTime = *arrival
+	cfg.CurrentVersion = version
+
+	if flag.CommandLine.Changed("nerd-font") {
+		nf, _ := flag.CommandLine.GetBool("nerd-font")
+		cfg.NerdFont = nf
 	}
 
 	m := ui.NewModel(cfg)

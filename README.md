@@ -71,6 +71,7 @@ Add your optional config at `$HOME/.config/sbb-tui/config.yaml`
 ```yaml
 # default configuration
 ui:
+  nerdFont: true
   theme:
     text:           "#FFFFFF"
     errorText:      "#D82E20"

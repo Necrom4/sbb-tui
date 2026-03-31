@@ -24,7 +24,8 @@ type Config struct {
 
 // UIConfig groups all UI-related settings.
 type UIConfig struct {
-	Theme Theme `yaml:"theme"`
+	NerdFont *bool `yaml:"nerdFont"`
+	Theme    Theme `yaml:"theme"`
 }
 
 type fileConfig struct {
@@ -114,18 +115,25 @@ func loadFile() (fileConfig, error) {
 	return cfg, nil
 }
 
-// LoadTheme reads the config file and returns a Theme with defaults merged.
-func LoadTheme() (Theme, error) {
-	theme := DefaultTheme()
+// LoadConfig reads the config file and returns a Config with defaults merged.
+func LoadConfig() (Config, error) {
+	result := Config{
+		NerdFont: true,
+		Theme:    DefaultTheme(),
+	}
 
 	fc, err := loadFile()
 	if err != nil {
-		return theme, err
+		return result, err
+	}
+
+	if fc.UI.NerdFont != nil {
+		result.NerdFont = *fc.UI.NerdFont
 	}
 
 	// NOTE: update mergeTheme when adding new Theme fields.
-	theme = mergeTheme(theme, fc.UI.Theme)
-	return theme, nil
+	result.Theme = mergeTheme(result.Theme, fc.UI.Theme)
+	return result, nil
 }
 
 func mergeTheme(base Theme, override Theme) Theme {
