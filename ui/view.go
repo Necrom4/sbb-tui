@@ -90,10 +90,8 @@ func (m appModel) renderHelpBar() string {
 	keys := []struct{ key, desc string }{
 		{m.icons.keyTab, "navigate"},
 		{m.icons.keyEnter, "search"},
-		{m.icons.keySpace, "toggle"},
-		{m.icons.keyUpDw, "results"},
-		{m.icons.keyUPDW, "scroll"},
-		{m.icons.keyRight, "complete"},
+		{m.icons.keyUpDown, "results"},
+		{m.icons.keyLeftRight, "complete"},
 		{m.icons.keyEsc, "quit"},
 	}
 

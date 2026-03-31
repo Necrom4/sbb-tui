@@ -13,18 +13,17 @@ type iconSet struct {
 	prompt    string
 
 	// Mode-invariant
-	towards   string
-	filledDot string
-	hollowDot string
-	horizLine string
-	vertLine  string
-	keyTab    string
-	keyEnter  string
-	keySpace  string
-	keyUpDw   string
-	keyUPDW   string
-	keyRight  string
-	keyEsc    string
+	towards      string
+	filledDot    string
+	hollowDot    string
+	horizLine    string
+	vertLine     string
+	keyTab       string
+	keyEnter     string
+	keyUpDown    string
+	keyLeftRight string
+	keyEsc       string
+	keyQuit      string
 }
 
 func newIconSet(nerdFont bool) iconSet {
@@ -39,13 +38,12 @@ func newIconSet(nerdFont bool) iconSet {
 		horizLine: "─",
 		vertLine:  "│",
 
-		keyTab:   "⇥",
-		keyEnter: "↵",
-		keySpace: "␣",
-		keyUpDw:  "↕",
-		keyUPDW:  "⇧↕",
-		keyRight: "→",
-		keyEsc:   "⎋",
+		keyTab:       "⇥",
+		keyEnter:     "↵",
+		keyUpDown:    "↕",
+		keyLeftRight: "←→",
+		keyEsc:       "⎋",
+		keyQuit:      "Q",
 	}
 
 	if nerdFont {
