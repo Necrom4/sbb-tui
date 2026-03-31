@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/Necrom4/sbb-tui/compare/v1.11.6...v1.12.0) (2026-03-31)
+
+
+### Bug Fixes
+
+* **config:** normalize `ErrorText` yaml tag to camelCase ([899f52e](https://github.com/Necrom4/sbb-tui/commit/899f52e9d85538da47bf188f4c04de37d3db3204))
+
+
+### Features
+
+* **config:** add nerdFont setting ([f9522d1](https://github.com/Necrom4/sbb-tui/commit/f9522d12f70a6d42348e428fae34d5cf61ad125f))
+
 ## [1.11.6](https://github.com/Necrom4/sbb-tui/compare/v1.11.5...v1.11.6) (2026-03-30)
 
 
