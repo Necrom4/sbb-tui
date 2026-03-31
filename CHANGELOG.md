@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/Necrom4/sbb-tui/compare/v1.12.0...v1.12.1) (2026-03-31)
+
+
+### Bug Fixes
+
+* **keys:** disable autocompletion if cursor is not at string's end ([d228ac1](https://github.com/Necrom4/sbb-tui/commit/d228ac1540cb74ed9db94a4473eb1defb21b2791)), closes [#33](https://github.com/Necrom4/sbb-tui/issues/33)
+
 # [1.12.0](https://github.com/Necrom4/sbb-tui/compare/v1.11.6...v1.12.0) (2026-03-31)
 
 
