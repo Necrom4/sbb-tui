@@ -7,7 +7,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"golang.org/x/text/unicode/norm"
 
@@ -26,116 +25,14 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.inputs[1].Width = inputWidth
 
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "esc":
+		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
-
-		case "q":
-			active := m.headerOrder[m.tabIndex]
-			if active.kind == kindButton {
-				return m, tea.Quit
-			}
-
-		case "enter":
-			if err := m.validateInputs(); err != nil {
-				m.errorMsg = err
-				m.connections = nil
-				m.searched = false
-				m.resultIndex = 0
-				return m, nil
-			}
-			m.loading = true
-			m.connections = nil
-			m.errorMsg = nil
-			m.searched = true
-			return m, m.searchCmd()
-
-		case " ":
-			active := m.headerOrder[m.tabIndex]
-			switch active.id {
-			case "swap":
-				tmp := m.inputs[0].Value()
-				m.inputs[0].SetValue(m.inputs[1].Value())
-				m.inputs[1].SetValue(tmp)
-			case "isArrivalTime":
-				m.isArrivalTime = !m.isArrivalTime
-			case "search":
-				if err := m.validateInputs(); err != nil {
-					m.errorMsg = err
-					m.connections = nil
-					m.searched = false
-					m.resultIndex = 0
-					return m, nil
-				}
-				m.loading = true
-				m.connections = nil
-				m.errorMsg = nil
-				m.searched = true
-				return m, m.searchCmd()
-			}
-
-		case "tab", "shift+tab":
-			if msg.String() == "shift+tab" {
-				m.tabIndex--
-			} else {
-				m.tabIndex++
-			}
-
-			if m.tabIndex >= len(m.headerOrder) {
-				m.tabIndex = 0
-			}
-			if m.tabIndex < 0 {
-				m.tabIndex = len(m.headerOrder) - 1
-			}
-
-			var cmds []tea.Cmd
-			for _, item := range m.headerOrder {
-				if item.kind == kindInput {
-					if item.index == m.headerOrder[m.tabIndex].index {
-						cmds = append(cmds, m.inputs[item.index].Focus())
-					} else {
-						m.inputs[item.index].Blur()
-					}
-				}
-			}
-			return m, tea.Batch(cmds...)
-
-		// Disable autocompletion if cursor is not at the end of the stirng.
-		case "right":
-			active := m.headerOrder[m.tabIndex]
-
-			if active.kind == kindInput {
-				input := m.inputs[active.index]
-
-				if input.Position() < len(input.Value()) {
-					original := input.KeyMap.AcceptSuggestion
-					input.KeyMap.AcceptSuggestion = key.NewBinding() // empty binding
-
-					var cmd tea.Cmd
-					m.inputs[active.index], cmd = input.Update(msg)
-					m.inputs[active.index].KeyMap.AcceptSuggestion = original
-
-					return m, cmd
-				}
-			}
-
-		case "up":
-			if len(m.connections) > 0 && m.resultIndex > 0 {
-				m.resultIndex--
-				m.detailScrollY = 0
-			}
-		case "down":
-			if len(m.connections) > 0 && m.resultIndex < len(m.connections)-1 {
-				m.resultIndex++
-				m.detailScrollY = 0
-			}
-		case "shift+up":
-			if m.detailScrollY > 0 {
-				m.detailScrollY--
-			}
-		case "shift+down":
-			m.detailScrollY++
 		}
+
+		if m.inputMode {
+			return m.updateInputMode(msg)
+		}
+		return m.updateSelectionMode(msg)
 
 	case suggestTickMsg:
 		// Fetch if no new keystroke has occurred since
@@ -171,8 +68,13 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	cmd := m.updateInputs(msg)
-	return m, cmd
+	// Forward non-key messages to inputs when in input mode.
+	if m.inputMode {
+		cmd := m.updateInputs(msg)
+		return m, cmd
+	}
+
+	return m, nil
 }
 
 func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
@@ -310,6 +212,112 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 	m.inputs[3].SetSuggestions([]string{completeTime(m.inputs[3].Value())})
 
 	return tea.Batch(cmds...)
+}
+
+func (m appModel) updateSelectionMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
+	case "q":
+		return m, tea.Quit
+	case "right", "l":
+		m.tabIndex++
+		if m.tabIndex >= len(m.headerOrder) {
+			m.tabIndex = 0
+		}
+	case "left", "h":
+		m.tabIndex--
+		if m.tabIndex < 0 {
+			m.tabIndex = len(m.headerOrder) - 1
+		}
+	case "enter", " ":
+		active := m.headerOrder[m.tabIndex]
+		switch active.kind {
+		case kindInput:
+			m.inputMode = true
+			return m, m.inputs[active.index].Focus()
+		case kindButton:
+			return m.triggerButton(active)
+		}
+	case "tab":
+		if len(m.connections) > 0 && m.resultIndex < len(m.connections)-1 {
+			m.resultIndex++
+			m.detailScrollY = 0
+		}
+	case "shift+tab":
+		if len(m.connections) > 0 && m.resultIndex > 0 {
+			m.resultIndex--
+			m.detailScrollY = 0
+		}
+	case "down", "j":
+		m.detailScrollY++
+	case "up", "k":
+		if m.detailScrollY > 0 {
+			m.detailScrollY--
+		}
+	}
+	return m, nil
+}
+
+func (m appModel) updateInputMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	active := m.headerOrder[m.tabIndex]
+	if active.kind != kindInput {
+		m.inputMode = false
+		return m, nil
+	}
+	switch msg.String() {
+	case "esc":
+		m.inputMode = false
+		m.inputs[active.index].Blur()
+		return m, nil
+	case "enter":
+		m.inputMode = false
+		m.inputs[active.index].Blur()
+		if err := m.validateInputs(); err != nil {
+			m.errorMsg = err
+			m.connections = nil
+			m.searched = false
+			m.resultIndex = 0
+			return m, nil
+		}
+		m.loading = true
+		m.connections = nil
+		m.errorMsg = nil
+		m.searched = true
+		return m, m.searchCmd()
+	case "tab":
+		input := m.inputs[active.index]
+		if suggestion := input.CurrentSuggestion(); suggestion != "" {
+			m.inputs[active.index].SetValue(suggestion)
+			m.inputs[active.index].CursorEnd()
+		}
+		return m, nil
+	}
+	cmd := m.updateInputs(msg)
+	return m, cmd
+}
+
+func (m appModel) triggerButton(active focusable) (tea.Model, tea.Cmd) {
+	switch active.id {
+	case "swap":
+		tmp := m.inputs[0].Value()
+		m.inputs[0].SetValue(m.inputs[1].Value())
+		m.inputs[1].SetValue(tmp)
+	case "isArrivalTime":
+		m.isArrivalTime = !m.isArrivalTime
+	case "search":
+		if err := m.validateInputs(); err != nil {
+			m.errorMsg = err
+			m.connections = nil
+			m.searched = false
+			m.resultIndex = 0
+			return m, nil
+		}
+		m.loading = true
+		m.connections = nil
+		m.errorMsg = nil
+		m.searched = true
+		return m, m.searchCmd()
+	}
+	return m, nil
 }
 
 func (m appModel) validateInputs() error {

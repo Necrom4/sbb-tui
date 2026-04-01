@@ -76,6 +76,8 @@ type appModel struct {
 	suggestSeq     [2]int
 	currentVersion string
 	newerVersion   string
+
+	inputMode bool
 }
 
 // NewModel creates the initial Bubbletea model from the application config.
@@ -96,6 +98,7 @@ func NewModel(cfg config.Config) appModel {
 		nerdFont:       cfg.NerdFont,
 		isArrivalTime:  cfg.IsArrivalTime,
 		currentVersion: cfg.CurrentVersion,
+		inputMode:      false, // Start in selection mode.
 	}
 
 	now := time.Now()
@@ -115,21 +118,20 @@ func NewModel(cfg config.Config) appModel {
 		switch i {
 		case 0:
 			t.Placeholder = "From"
-			t.KeyMap.AcceptSuggestion = key.NewBinding(key.WithKeys("right"))
+			t.KeyMap.AcceptSuggestion = key.NewBinding()
 			if cfg.From != "" {
 				t.SetValue(cfg.From)
 			}
-			t.Focus()
 		case 1:
 			t.Placeholder = "To"
-			t.KeyMap.AcceptSuggestion = key.NewBinding(key.WithKeys("right"))
+			t.KeyMap.AcceptSuggestion = key.NewBinding()
 			if cfg.To != "" {
 				t.SetValue(cfg.To)
 			}
 		case 2:
 			t.CharLimit = 10
 			t.Width = t.CharLimit
-			t.KeyMap.AcceptSuggestion = key.NewBinding(key.WithKeys("right"))
+			t.KeyMap.AcceptSuggestion = key.NewBinding()
 			if cfg.Date != "" {
 				t.SetValue(cfg.Date)
 			} else {
@@ -138,13 +140,15 @@ func NewModel(cfg config.Config) appModel {
 		case 3:
 			t.CharLimit = 5
 			t.Width = t.CharLimit
-			t.KeyMap.AcceptSuggestion = key.NewBinding(key.WithKeys("right"))
+			t.KeyMap.AcceptSuggestion = key.NewBinding()
 			if cfg.Time != "" {
 				t.SetValue(cfg.Time)
 			} else {
 				t.SetValue(now.Format("15:04"))
 			}
 		}
+		// All inputs start blurred (selection mode).
+		t.Blur()
 		m.inputs[i] = t
 	}
 	return m
@@ -152,7 +156,7 @@ func NewModel(cfg config.Config) appModel {
 
 // Init implements tea.Model.
 func (m appModel) Init() tea.Cmd {
-	return tea.Batch(textinput.Blink, checkVersionCmd(m.currentVersion))
+	return checkVersionCmd(m.currentVersion)
 }
 
 func checkVersionCmd(current string) tea.Cmd {

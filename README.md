@@ -60,9 +60,11 @@ go build
 ## 🚀 Usage
 
 1. Run `sbb-tui`
-2. Input **departure** and **arrival** locations (navigate with `tab`).
-3. Add optional information such as **date**, **time**, and **whether** those are for departure or arrival.
-4. Press `Enter` to view the results (navigate with arrows).
+2. Navigate the header fields with `←`/`→` (or `h`/`l`).
+3. Press `Enter` or `Space` to enter an input field or trigger a button.
+4. Inside an input field, type your query. Press `Tab` to accept autocompletion. Press `Enter` to search, or `Esc` to go back to header navigation.
+5. Once results are displayed, use `Tab`/`Shift+Tab` to select a connection
+   and `↑`/`↓` (or `j`/`k`) to scroll the detailed view.
 
 ## ⚙️ Configuration
 

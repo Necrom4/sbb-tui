@@ -87,14 +87,22 @@ func (m appModel) renderHeader() string {
 }
 
 func (m appModel) renderHelpBar() string {
-	keys := []struct{ key, desc string }{
-		{m.icons.keyTab, "navigate"},
-		{m.icons.keyEnter, "search"},
-		{m.icons.keySpace, "toggle"},
-		{m.icons.keyUpDw, "results"},
-		{m.icons.keyUPDW, "scroll"},
-		{m.icons.keyRight, "complete"},
-		{m.icons.keyEsc, "quit"},
+	var keys []struct{ key, desc string }
+
+	if m.inputMode {
+		keys = []struct{ key, desc string }{
+			{m.icons.keyTab, "complete"},
+			{m.icons.keyEnter, "search"},
+			{m.icons.keyEsc, "back"},
+		}
+	} else {
+		keys = []struct{ key, desc string }{
+			{m.icons.keyLeftRight, "navigate"},
+			{m.icons.keyEnter, "select"},
+			{m.icons.keyTab, "results"},
+			{m.icons.keyUpDown, "scroll"},
+			{m.icons.keyQuit, "quit"},
+		}
 	}
 
 	var parts []string
