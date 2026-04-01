@@ -7,6 +7,7 @@ pre-commit = "latest"
 "go:golang.org/x/tools/cmd/goimports" = "latest"
 yq = "latest"
 markdownlint-cli2 = "latest"
+"pipx:conventional-pre-commit" = "latest"
 
 [env]
 # Styles
@@ -27,7 +28,7 @@ _LINK_END = "\u001b]8;;\u001b\\"
 
 [tasks.init]
 description = "Install hooks and setup environment"
-run = "pre-commit install"
+run = "pre-commit install --install-hooks"
 
 [tasks.pre-commit-run]
 description = "Run a pre-commit hook by id"
