@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+// SwissLocation is the time zone for Switzerland (CET/CEST, Europe/Zurich).
+// main.go imports _ "time/tzdata" so the embedded TZ database is always
+// available; the fixed-offset fallback is a last-resort safety net only and
+// does not handle the CET↔CEST daylight-saving transition.
+var SwissLocation = func() *time.Location {
+	loc, err := time.LoadLocation("Europe/Zurich")
+	if err != nil {
+		loc = time.FixedZone("CET", 1*60*60)
+	}
+	return loc
+}()
+
 // Timestamp wraps time.Time with custom JSON unmarshaling for the SBB API
 // date format (2006-01-02T15:04:05-0700).
 type Timestamp struct {
@@ -15,6 +27,12 @@ type Timestamp struct {
 // Sub returns the duration between two Timestamps.
 func (t Timestamp) Sub(other Timestamp) time.Duration {
 	return t.Time.Sub(other.Time)
+}
+
+// Local overrides time.Time.Local() to return the timestamp in Swiss time
+// (CET/CEST, Europe/Zurich) instead of the system's local timezone.
+func (t Timestamp) Local() time.Time {
+	return t.Time.In(SwissLocation)
 }
 
 // UnmarshalJSON parses the SBB API date format into a Timestamp.

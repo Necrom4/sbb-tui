@@ -12,6 +12,7 @@ import (
 	"golang.org/x/text/unicode/norm"
 
 	"github.com/necrom4/sbb-tui/api"
+	"github.com/necrom4/sbb-tui/model"
 )
 
 // Update implements tea.Model.
@@ -330,7 +331,7 @@ func fetchSuggestionsCmd(inputIndex int, query string) tea.Cmd {
 }
 
 func completeDate(partial string) string {
-	now := time.Now()
+	now := time.Now().In(model.SwissLocation)
 	full := now.Format("02.01.2006")
 	if len(partial) < len(full) {
 		return partial + full[len(partial):]

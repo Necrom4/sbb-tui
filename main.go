@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	_ "time/tzdata" // embed timezone database so Europe/Zurich always resolves
 
 	tea "github.com/charmbracelet/bubbletea"
 	flag "github.com/spf13/pflag"
