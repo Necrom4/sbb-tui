@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/Necrom4/sbb-tui/compare/v1.12.2...v1.12.3) (2026-04-02)
+
+
+### Bug Fixes
+
+* **timezone:** remote `Time.` according to linter ([20d50d7](https://github.com/Necrom4/sbb-tui/commit/20d50d72bfaf207d4db3d397abe5334c5f7b148d))
+
 ## [1.12.2](https://github.com/Necrom4/sbb-tui/compare/v1.12.1...v1.12.2) (2026-04-02)
 
 
