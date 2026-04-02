@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/Necrom4/sbb-tui/compare/v1.12.1...v1.12.2) (2026-04-02)
+
+
+### Bug Fixes
+
+* **ui:** ensure timetable uses Swiss time ([#47](https://github.com/Necrom4/sbb-tui/issues/47)) ([a9d68f7](https://github.com/Necrom4/sbb-tui/commit/a9d68f7703934835f95e6abc02e189ec4eb39a60)), closes [#43](https://github.com/Necrom4/sbb-tui/issues/43)
+
 ## [1.12.1](https://github.com/Necrom4/sbb-tui/compare/v1.12.0...v1.12.1) (2026-03-31)
 
 
