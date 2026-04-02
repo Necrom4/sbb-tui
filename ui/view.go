@@ -17,7 +17,7 @@ var (
 	//go:embed sbb-logo-nerdfont.txt
 	sbbLogoNerdFont string
 
-	latestReleaseUrl = "https://github.com/Necrom4/sbb-tui/releases/latest"
+	latestReleaseURL = "https://github.com/Necrom4/sbb-tui/releases/latest"
 )
 
 // View implements tea.Model.
@@ -38,12 +38,12 @@ func (m appModel) View() string {
 			Render(m.renderDetailedResult()),
 	)
 
-	helpBar := m.renderHelpBar()
+	footer := m.renderFooter()
 
 	return lipgloss.JoinVertical(lipgloss.Left,
 		header,
 		results,
-		helpBar,
+		footer,
 	)
 }
 
@@ -88,7 +88,7 @@ func (m appModel) renderHeader() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, headerItems...)
 }
 
-func (m appModel) renderHelpBar() string {
+func (m appModel) helpDesc() string {
 	keys := []struct{ key, desc string }{
 		{m.icons.keyTab, "navigate"},
 		{m.icons.keyEnter, "search"},
@@ -104,34 +104,41 @@ func (m appModel) renderHelpBar() string {
 		parts = append(parts, m.styles.helpKey.Render(k.key)+" "+m.styles.helpDesc.Render(k.desc))
 	}
 
-	left := " " + strings.Join(parts, "   ")
-	current := fmt.Sprintf("SBB-TUI %s", m.currentVersion)
-	right := ""
+	return " " + strings.Join(parts, "   ")
+}
 
+func (m appModel) versionInfo(space int) string {
+	title := "SBB-TUI"
+	versionInfo := ""
 	minGap := 2
-	spaceForRight := m.width - lipgloss.Width(left)
-	if spaceForRight > minGap {
-		currentWidth := lipgloss.Width(current)
+	if space > minGap {
+		baseWidth := lipgloss.Width(title + m.currentVersion)
 		if m.newerVersion != "" {
-			link := renderLink(m.newerVersion, latestReleaseUrl)
-			latest := m.styles.warning.Render(fmt.Sprintf("(latest: %s)", link))
-			withLatest := fmt.Sprintf("%s %s", current, latest)
-			if lipgloss.Width(withLatest)+minGap <= spaceForRight {
-				right = withLatest
+			latestVersion := renderLink(m.newerVersion, latestReleaseURL)
+			latestWrapper := m.styles.warning.Render(fmt.Sprintf("(latest: %s)", latestVersion))
+			fullVersionInfo := fmt.Sprintf("%s %s %s", title, m.currentVersion, latestWrapper)
+			if lipgloss.Width(fullVersionInfo)+minGap <= space {
+				versionInfo = fullVersionInfo
 			}
 		}
 
-		if right == "" && currentWidth+minGap <= spaceForRight {
-			right = current
+		if versionInfo == "" && baseWidth+minGap <= space {
+			versionInfo = title + " " + m.currentVersion
 		}
 	}
+	return versionInfo
+}
 
-	if right == "" {
-		return left
+func (m appModel) renderFooter() string {
+	helpDesc := m.helpDesc()
+	versionInfo := m.versionInfo(m.width - lipgloss.Width(helpDesc))
+
+	if versionInfo == "" {
+		return helpDesc
 	}
 
-	gap := m.width - lipgloss.Width(left) - lipgloss.Width(right)
-	return left + strings.Repeat(" ", gap) + m.styles.ghostText.Render(right)
+	gap := m.width - lipgloss.Width(helpDesc) - lipgloss.Width(versionInfo)
+	return helpDesc + strings.Repeat(" ", gap) + m.styles.ghostText.Render(versionInfo)
 }
 
 func (m appModel) renderHeaderItem(idx int) string {
@@ -210,8 +217,8 @@ func (m appModel) renderStartScreen() string {
 	block := lipgloss.JoinVertical(lipgloss.Center, text, "", coloredLogo)
 
 	if m.newerVersion != "" {
-		link := renderLink(m.newerVersion, latestReleaseUrl)
-		label := fmt.Sprintf("Update available: %s", link)
+		latestVersion := renderLink(m.newerVersion, latestReleaseURL)
+		label := fmt.Sprintf("Update available: %s", latestVersion)
 		block = lipgloss.JoinVertical(lipgloss.Center, block, "", m.styles.active.Render(label))
 	}
 
