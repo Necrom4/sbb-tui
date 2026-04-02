@@ -88,8 +88,10 @@ func (m appModel) renderHeader() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, headerItems...)
 }
 
-func (m appModel) helpDesc() string {
-	keys := []struct{ key, desc string }{
+// Footer rendering
+
+func (m appModel) renderHelpBar() string {
+	bindings := []struct{ key, desc string }{
 		{m.icons.keyTab, "navigate"},
 		{m.icons.keyEnter, "search"},
 		{m.icons.keySpace, "toggle"},
@@ -99,46 +101,51 @@ func (m appModel) helpDesc() string {
 		{m.icons.keyEsc, "quit"},
 	}
 
-	var parts []string
-	for _, k := range keys {
-		parts = append(parts, m.styles.helpKey.Render(k.key)+" "+m.styles.helpDesc.Render(k.desc))
+	parts := make([]string, len(bindings))
+	for i, b := range bindings {
+		parts[i] = m.styles.helpKey.Render(b.key) + " " + m.styles.helpDesc.Render(b.desc)
 	}
 
 	return " " + strings.Join(parts, "   ")
 }
 
-func (m appModel) versionInfo(space int) string {
-	title := "SBB-TUI"
-	versionInfo := ""
-	minGap := 2
-	if space > minGap {
-		baseWidth := lipgloss.Width(title + m.currentVersion)
-		if m.newerVersion != "" {
-			latestVersion := renderLink(m.newerVersion, latestReleaseURL)
-			latestWrapper := m.styles.warning.Render(fmt.Sprintf("(latest: %s)", latestVersion))
-			fullVersionInfo := fmt.Sprintf("%s %s %s", title, m.currentVersion, latestWrapper)
-			if lipgloss.Width(fullVersionInfo)+minGap <= space {
-				versionInfo = fullVersionInfo
-			}
-		}
+func (m appModel) renderVersionBadge(availableWidth int) string {
+	const (
+		appName = "SBB-TUI"
+		minGap  = 2
+	)
 
-		if versionInfo == "" && baseWidth+minGap <= space {
-			versionInfo = title + " " + m.currentVersion
+	if availableWidth <= minGap {
+		return ""
+	}
+
+	if m.newerVersion != "" {
+		latestLink := renderLink(m.newerVersion, latestReleaseURL)
+		updateNotice := m.styles.warning.Render(fmt.Sprintf("(latest: %s)", latestLink))
+		full := fmt.Sprintf("%s %s %s", appName, m.currentVersion, updateNotice)
+		if lipgloss.Width(full)+minGap <= availableWidth {
+			return full
 		}
 	}
-	return versionInfo
+
+	short := appName + " " + m.currentVersion
+	if lipgloss.Width(short)+minGap <= availableWidth {
+		return short
+	}
+
+	return ""
 }
 
 func (m appModel) renderFooter() string {
-	helpDesc := m.helpDesc()
-	versionInfo := m.versionInfo(m.width - lipgloss.Width(helpDesc))
+	helpBar := m.renderHelpBar()
+	versionBadge := m.renderVersionBadge(m.width - lipgloss.Width(helpBar))
 
-	if versionInfo == "" {
-		return helpDesc
+	if versionBadge == "" {
+		return helpBar
 	}
 
-	gap := m.width - lipgloss.Width(helpDesc) - lipgloss.Width(versionInfo)
-	return helpDesc + strings.Repeat(" ", gap) + m.styles.ghostText.Render(versionInfo)
+	gap := m.width - lipgloss.Width(helpBar) - lipgloss.Width(versionBadge)
+	return helpBar + strings.Repeat(" ", gap) + m.styles.ghostText.Render(versionBadge)
 }
 
 func (m appModel) renderHeaderItem(idx int) string {
