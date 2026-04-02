@@ -76,21 +76,21 @@ Add your optional config at `$HOME/.config/sbb-tui/config.yaml`
 ui:
   nerdfont: true
   theme:
-    text:           "#FFFFFF"
-    errorText:      "#D82E20"
-    ghostText:      "#888888"
-    activeBorder:   "#D82E20"
-    inactiveBorder: "#484848"
-    warningFlag:    "#D82E20"
-    keysFg:         "#FFFFFF"
-    keysBg:         "#484848"
-    vehicleFg:      "#FFFFFF"
-    vehicleBg:      "#2E3279"
-    modelFg:        "#FFFFFF"
-    modelBg:        "#D82E20"
-    companyFg:      "#484848"
-    companyBg:      "#FFFFFF"
-    logo:           "#FFFFFF"
+    text:            "#FFFFFF"
+    textMuted:       "#888888"
+    error:           "#D82E20"
+    warning:         "#D82E20"
+    borderFocused:   "#D82E20"
+    borderUnfocused: "#484848"
+    keysFg:          "#FFFFFF"
+    keysBg:          "#484848"
+    vehicleFg:       "#FFFFFF"
+    vehicleBg:       "#2E3279"
+    badgeModelFg:    "#FFFFFF"
+    badgeModelBg:    "#D82E20"
+    badgeCompanyFg:  "#484848"
+    badgeCompanyBg:  "#FFFFFF"
+    logo:            "#FFFFFF"
 ```
 
 > More **themes** can be found at [`docs/themes.md`](https://github.com/Necrom4/sbb-tui/blob/master/docs/themes.md)

@@ -106,9 +106,9 @@ func NewModel(cfg config.Config) appModel {
 
 		t.TextStyle = m.styles.text
 		t.PromptStyle = m.styles.text
-		t.PlaceholderStyle = m.styles.ghostText
+		t.PlaceholderStyle = m.styles.textMuted
 		t.Cursor.Style = m.styles.active
-		t.CompletionStyle = m.styles.ghostText
+		t.CompletionStyle = m.styles.textMuted
 		t.Prompt = m.icons.prompt
 		t.ShowSuggestions = true
 

@@ -122,7 +122,7 @@ func (m appModel) renderJourneySection(section model.Section, width, labelCol, p
 	vehicleLine := fmt.Sprintf("%s  %s  %s %s %s", indent, m.icons.vertLine, vehicleIcon, vehicleModel, company)
 	lines = append(lines, vehicleLine)
 
-	destLine := fmt.Sprintf("%s  %s   %s", indent, m.icons.vertLine, m.styles.ghostText.Render(m.icons.towards+" "+section.Journey.To))
+	destLine := fmt.Sprintf("%s  %s   %s", indent, m.icons.vertLine, m.styles.textMuted.Render(m.icons.towards+" "+section.Journey.To))
 	lines = append(lines, destLine)
 
 	lines = append(lines, spacingLine)
@@ -201,7 +201,7 @@ func (m appModel) formatStationLine(timeStr, symbol, station, platform string, w
 	if platform != "" {
 		label := m.icons.platformLabel(platform)
 		leadingPad := strings.Repeat(" ", max(labelCol-len([]rune(label)), 0))
-		labelPart := leadingPad + m.styles.ghostText.Render(label)
+		labelPart := leadingPad + m.styles.textMuted.Render(label)
 		valuePart := textStyle.Render(platform)
 		platformPart = labelPart + " " + valuePart
 	}
@@ -256,7 +256,7 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 	}
 
 	if firstVehicle == -1 {
-		return m.styles.errorText.Width(width).Padding(1, 2).Render(userError(errConnectionMalformed))
+		return m.styles.error.Width(width).Padding(1, 2).Render(userError(errConnectionMalformed))
 	}
 
 	lineContentWidth := max(width-style.GetHorizontalFrameSize()-2, 0)
@@ -313,7 +313,7 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 	}
 	if platform != "" {
 		label := m.icons.platformLabel(platform)
-		platformInfo = m.styles.ghostText.Render(label) + " " + m.styles.text.Render(platform)
+		platformInfo = m.styles.textMuted.Render(label) + " " + m.styles.text.Render(platform)
 	}
 
 	duration := m.styles.text.Render(formatDuration(c.Duration))

@@ -123,7 +123,7 @@ func (m appModel) renderVersionBadge(availableWidth int) string {
 		full := fmt.Sprintf(
 			"%s %s %s %s %s",
 			m.styles.text.Render(appName),
-			m.styles.ghostText.Render(m.currentVersion),
+			m.styles.textMuted.Render(m.currentVersion),
 			m.styles.text.Render("•"),
 			m.styles.warning.Render("latest:"),
 			m.styles.warning.Render(renderLink(m.newerVersion, latestReleaseURL)),
@@ -136,7 +136,7 @@ func (m appModel) renderVersionBadge(availableWidth int) string {
 	short := fmt.Sprintf(
 		"%s %s",
 		m.styles.text.Render(appName),
-		m.styles.ghostText.Render(m.currentVersion))
+		m.styles.textMuted.Render(m.currentVersion))
 
 	if lipgloss.Width(short)+minGap <= availableWidth {
 		return short
@@ -228,7 +228,7 @@ func (m appModel) renderStartScreen() string {
 
 	coloredLogo := m.styles.logo.Render(logo)
 
-	text := m.styles.ghostText.Render("Enter stations above to see timetables")
+	text := m.styles.textMuted.Render("Enter stations above to see timetables")
 
 	block := lipgloss.JoinVertical(lipgloss.Center, text, "", coloredLogo)
 

@@ -24,8 +24,8 @@ const (
 
 type styles struct {
 	text           lipgloss.Style
-	errorText      lipgloss.Style
-	ghostText      lipgloss.Style
+	error          lipgloss.Style
+	textMuted      lipgloss.Style
 	active         lipgloss.Style
 	inactive       lipgloss.Style
 	detailedResult lipgloss.Style
@@ -44,46 +44,46 @@ func newStyles(theme config.Theme) styles {
 	return styles{
 		text: lipgloss.NewStyle().
 			Foreground(lipgloss.Color(theme.Text)),
-		errorText: lipgloss.NewStyle().
-			Foreground(lipgloss.Color(theme.ErrorText)),
-		ghostText: lipgloss.NewStyle().
-			Foreground(lipgloss.Color(theme.GhostText)),
+		error: lipgloss.NewStyle().
+			Foreground(lipgloss.Color(theme.Error)),
+		textMuted: lipgloss.NewStyle().
+			Foreground(lipgloss.Color(theme.TextMuted)),
 		active: lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color(theme.ActiveBorder)).
+			BorderForeground(lipgloss.Color(theme.BorderFocused)).
 			Foreground(lipgloss.Color(theme.Text)).
 			Padding(0, 1),
 		inactive: lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color(theme.InactiveBorder)).
+			BorderForeground(lipgloss.Color(theme.BorderUnfocused)).
 			Foreground(lipgloss.Color(theme.Text)).
 			Padding(0, 1),
 		detailedResult: lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color(theme.ActiveBorder)).
+			BorderForeground(lipgloss.Color(theme.BorderFocused)).
 			Padding(detailPaddingV, detailPaddingH),
 		helpKey: lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.Color(theme.KeysFg)).
-			Background(lipgloss.Color(theme.KeysBg)).
+			Foreground(lipgloss.Color(theme.BadgeKeyFg)).
+			Background(lipgloss.Color(theme.BadgeKeyBg)).
 			Padding(0, 1),
 		helpDesc: lipgloss.NewStyle().
-			Foreground(lipgloss.Color(theme.GhostText)),
+			Foreground(lipgloss.Color(theme.TextMuted)),
 		warning: lipgloss.NewStyle().
-			Foreground(lipgloss.Color(theme.WarningFlag)),
+			Foreground(lipgloss.Color(theme.Warning)),
 		warningBold: lipgloss.NewStyle().
-			Foreground(lipgloss.Color(theme.WarningFlag)).
+			Foreground(lipgloss.Color(theme.Warning)).
 			Bold(true),
 		vehicleIcon: lipgloss.NewStyle().
-			Background(lipgloss.Color(theme.VehicleBg)).
-			Foreground(lipgloss.Color(theme.VehicleFg)),
+			Background(lipgloss.Color(theme.BadgeVehicleBg)).
+			Foreground(lipgloss.Color(theme.BadgeVehicleFg)),
 		vehicleModel: lipgloss.NewStyle().
-			Background(lipgloss.Color(theme.ModelBg)).
-			Foreground(lipgloss.Color(theme.ModelFg)).
+			Background(lipgloss.Color(theme.BadgeModelBg)).
+			Foreground(lipgloss.Color(theme.BadgeBadgeModelFg)).
 			Bold(true),
 		company: lipgloss.NewStyle().
-			Background(lipgloss.Color(theme.CompanyBg)).
-			Foreground(lipgloss.Color(theme.CompanyFg)),
+			Background(lipgloss.Color(theme.BadgeCompanyBg)).
+			Foreground(lipgloss.Color(theme.BadgeCompanyFg)),
 		logo: lipgloss.NewStyle().
 			Foreground(lipgloss.Color(theme.Logo)),
 		bold: lipgloss.NewStyle().

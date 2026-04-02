@@ -34,41 +34,41 @@ type fileConfig struct {
 
 // Theme defines color values for the TUI appearance.
 type Theme struct {
-	Text           string `yaml:"text"`
-	ErrorText      string `yaml:"errorText"`
-	GhostText      string `yaml:"ghostText"`
-	ActiveBorder   string `yaml:"activeBorder"`
-	InactiveBorder string `yaml:"inactiveBorder"`
-	WarningFlag    string `yaml:"warningFlag"`
-	KeysFg         string `yaml:"keysFg"`
-	KeysBg         string `yaml:"keysBg"`
-	VehicleFg      string `yaml:"vehicleFg"`
-	VehicleBg      string `yaml:"vehicleBg"`
-	ModelFg        string `yaml:"modelFg"`
-	ModelBg        string `yaml:"modelBg"`
-	CompanyFg      string `yaml:"companyFg"`
-	CompanyBg      string `yaml:"companyBg"`
-	Logo           string `yaml:"logo"`
+	Text              string `yaml:"text"`
+	TextMuted         string `yaml:"textMuted"`
+	Error             string `yaml:"error"`
+	Warning           string `yaml:"warning"`
+	BorderFocused     string `yaml:"borderFocused"`
+	BorderUnfocused   string `yaml:"borderUnfocused"`
+	BadgeKeyFg        string `yaml:"badgeKeyFg"`
+	BadgeKeyBg        string `yaml:"badgeKeyBg"`
+	BadgeVehicleFg    string `yaml:"badgeVehicleFg"`
+	BadgeVehicleBg    string `yaml:"badgeVehicleBg"`
+	BadgeBadgeModelFg string `yaml:"badgeModelFg"`
+	BadgeModelBg      string `yaml:"badgeModelBg"`
+	BadgeCompanyFg    string `yaml:"badgeCompanyFg"`
+	BadgeCompanyBg    string `yaml:"badgeCompanyBg"`
+	Logo              string `yaml:"logo"`
 }
 
 // DefaultTheme returns the SBB brand color scheme.
 func DefaultTheme() Theme {
 	return Theme{
-		Text:           "#FFFFFF",
-		ErrorText:      "#D82E20",
-		GhostText:      "#888888",
-		ActiveBorder:   "#D82E20",
-		InactiveBorder: "#484848",
-		WarningFlag:    "#D82E20",
-		KeysFg:         "#FFFFFF",
-		KeysBg:         "#484848",
-		VehicleFg:      "#FFFFFF",
-		VehicleBg:      "#2E3279",
-		ModelFg:        "#FFFFFF",
-		ModelBg:        "#D82E20",
-		CompanyFg:      "#484848",
-		CompanyBg:      "#FFFFFF",
-		Logo:           "#FFFFFF",
+		Text:              "#FFFFFF",
+		TextMuted:         "#888888",
+		Error:             "#D82E20",
+		Warning:           "#D82E20",
+		BorderFocused:     "#D82E20",
+		BorderUnfocused:   "#484848",
+		BadgeKeyFg:        "#FFFFFF",
+		BadgeKeyBg:        "#484848",
+		BadgeVehicleFg:    "#FFFFFF",
+		BadgeVehicleBg:    "#2E3279",
+		BadgeBadgeModelFg: "#FFFFFF",
+		BadgeModelBg:      "#D82E20",
+		BadgeCompanyFg:    "#484848",
+		BadgeCompanyBg:    "#FFFFFF",
+		Logo:              "#FFFFFF",
 	}
 }
 
@@ -140,41 +140,41 @@ func mergeTheme(base Theme, override Theme) Theme {
 	if override.Text != "" {
 		base.Text = override.Text
 	}
-	if override.GhostText != "" {
-		base.GhostText = override.GhostText
+	if override.TextMuted != "" {
+		base.TextMuted = override.TextMuted
 	}
-	if override.ActiveBorder != "" {
-		base.ActiveBorder = override.ActiveBorder
+	if override.BorderFocused != "" {
+		base.BorderFocused = override.BorderFocused
 	}
-	if override.InactiveBorder != "" {
-		base.InactiveBorder = override.InactiveBorder
+	if override.BorderUnfocused != "" {
+		base.BorderUnfocused = override.BorderUnfocused
 	}
-	if override.WarningFlag != "" {
-		base.WarningFlag = override.WarningFlag
+	if override.Warning != "" {
+		base.Warning = override.Warning
 	}
-	if override.KeysFg != "" {
-		base.KeysFg = override.KeysFg
+	if override.BadgeKeyFg != "" {
+		base.BadgeKeyFg = override.BadgeKeyFg
 	}
-	if override.KeysBg != "" {
-		base.KeysBg = override.KeysBg
+	if override.BadgeKeyBg != "" {
+		base.BadgeKeyBg = override.BadgeKeyBg
 	}
-	if override.VehicleFg != "" {
-		base.VehicleFg = override.VehicleFg
+	if override.BadgeVehicleFg != "" {
+		base.BadgeVehicleFg = override.BadgeVehicleFg
 	}
-	if override.VehicleBg != "" {
-		base.VehicleBg = override.VehicleBg
+	if override.BadgeVehicleBg != "" {
+		base.BadgeVehicleBg = override.BadgeVehicleBg
 	}
-	if override.ModelFg != "" {
-		base.ModelFg = override.ModelFg
+	if override.BadgeBadgeModelFg != "" {
+		base.BadgeBadgeModelFg = override.BadgeBadgeModelFg
 	}
-	if override.ModelBg != "" {
-		base.ModelBg = override.ModelBg
+	if override.BadgeModelBg != "" {
+		base.BadgeModelBg = override.BadgeModelBg
 	}
-	if override.CompanyFg != "" {
-		base.CompanyFg = override.CompanyFg
+	if override.BadgeCompanyFg != "" {
+		base.BadgeCompanyFg = override.BadgeCompanyFg
 	}
-	if override.CompanyBg != "" {
-		base.CompanyBg = override.CompanyBg
+	if override.BadgeCompanyBg != "" {
+		base.BadgeCompanyBg = override.BadgeCompanyBg
 	}
 	if override.Logo != "" {
 		base.Logo = override.Logo
