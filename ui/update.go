@@ -188,57 +188,41 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 			s := msg.String()
 			val := t.Value()
 
-			if msg.Type == tea.KeyBackspace {
-				if len(val) == 4 || len(val) == 7 {
-					t.SetValue(val[:len(val)-2])
-					return nil
-				}
-			}
+			// strip delimiters to get raw digits
+			digits := stripDelimiters(val, '.')
 
-			// date/time input: auto-insert `.`/`:` and block non existent values
-			// block typing from the middle to keep delimiters in place
-			if len(s) == 1 && s >= "0" && s <= "9" && t.Position() < len(val) {
+			if msg.Type == tea.KeyBackspace {
+				pos := t.Position()
+				// figure out which digit the cursor is on
+				digitPos := countDigitsBefore(val, pos)
+				if digitPos > 0 && digitPos <= len(digits) {
+					digits = digits[:digitPos-1] + digits[digitPos:]
+					formatted := formatDate(digits)
+					t.SetValue(formatted)
+					newPos := posOfDigit(formatted, digitPos-1)
+					t.SetCursor(newPos)
+				}
 				return nil
 			}
+
 			if len(s) == 1 && s >= "0" && s <= "9" {
-				switch len(val) {
-				case 0:
-					if s > "3" {
-						return nil
-					}
-				case 1:
-					if val[0] == '0' && s == "0" {
-						return nil
-					}
-					if val[0] == '3' && s > "1" {
-						return nil
-					}
-				case 2:
-					if s > "1" {
-						return nil
-					}
-					t.SetValue(val + "." + s)
-					t.SetCursor(len(val) + 2)
-					return nil
-				case 3:
-				case 4:
-					if val[3] == '0' && s == "0" {
-						return nil
-					}
-					if val[3] == '1' && s > "2" {
-						return nil
-					}
-				case 5:
-					if s > "2" {
-						return nil
-					}
-					t.SetValue(val + "." + s)
-					t.SetCursor(len(val) + 2)
-					return nil
-				case 6, 7, 8, 9:
-				default:
+				if len(digits) >= 8 {
 					return nil
 				}
+				// insert digit at cursor position
+				pos := t.Position()
+				digitPos := countDigitsBefore(val, pos)
+				newDigits := digits[:digitPos] + s + digits[digitPos:]
+
+				// validate the new digit string
+				if !validateDateDigits(newDigits) {
+					return nil
+				}
+
+				formatted := formatDate(newDigits)
+				t.SetValue(formatted)
+				t.SetCursor(posOfDigit(formatted, digitPos+1))
+				return nil
 			} else if msg.Type == tea.KeyRunes {
 				return nil
 			}
@@ -248,36 +232,38 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 			s := msg.String()
 			val := t.Value()
 
-			if msg.Type == tea.KeyBackspace && len(val) == 4 {
-				t.SetValue(val[:2])
+			// strip delimiters to get raw digits
+			digits := stripDelimiters(val, ':')
+
+			if msg.Type == tea.KeyBackspace {
+				pos := t.Position()
+				digitPos := countDigitsBefore(val, pos)
+				if digitPos > 0 && digitPos <= len(digits) {
+					digits = digits[:digitPos-1] + digits[digitPos:]
+					formatted := formatTime(digits)
+					t.SetValue(formatted)
+					newPos := posOfDigit(formatted, digitPos-1)
+					t.SetCursor(newPos)
+				}
 				return nil
 			}
 
-			// block typing from the middle to keep delimiters in place
-			if len(s) == 1 && s >= "0" && s <= "9" && t.Position() < len(val) {
-				return nil
-			}
 			if len(s) == 1 && s >= "0" && s <= "9" {
-				switch len(val) {
-				case 0:
-					if s > "2" {
-						return nil
-					}
-				case 1:
-					if val == "2" && s > "3" {
-						return nil
-					}
-				case 2:
-					if s > "5" {
-						return nil
-					}
-					t.SetValue(val + ":" + s)
-					t.SetCursor(5)
-					return nil
-				case 3, 4:
-				default:
+				if len(digits) >= 4 {
 					return nil
 				}
+				pos := t.Position()
+				digitPos := countDigitsBefore(val, pos)
+				newDigits := digits[:digitPos] + s + digits[digitPos:]
+
+				if !validateTimeDigits(newDigits) {
+					return nil
+				}
+
+				formatted := formatTime(newDigits)
+				t.SetValue(formatted)
+				t.SetCursor(posOfDigit(formatted, digitPos+1))
+				return nil
 			} else if msg.Type == tea.KeyRunes {
 				return nil
 			}
@@ -353,6 +339,111 @@ func completeTime(partial string) string {
 		return full
 	}
 	return partial
+}
+
+// stripDelimiters removes all occurrences of delim from s.
+func stripDelimiters(s string, delim byte) string {
+	result := make([]byte, 0, len(s))
+	for i := 0; i < len(s); i++ {
+		if s[i] != delim {
+			result = append(result, s[i])
+		}
+	}
+	return string(result)
+}
+
+// countDigitsBefore returns how many non-delimiter characters appear before position pos.
+func countDigitsBefore(s string, pos int) int {
+	count := 0
+	for i := 0; i < pos && i < len(s); i++ {
+		if s[i] != '.' && s[i] != ':' {
+			count++
+		}
+	}
+	return count
+}
+
+// posOfDigit returns the string position of the nth digit (0-indexed) in s,
+// or len(s) if n is past the end.
+func posOfDigit(s string, n int) int {
+	count := 0
+	for i := 0; i < len(s); i++ {
+		if s[i] != '.' && s[i] != ':' {
+			if count == n {
+				return i
+			}
+			count++
+		}
+	}
+	return len(s)
+}
+
+// formatDate inserts dots into a raw digit string: DDMMYYYY -> DD.MM.YYYY
+func formatDate(digits string) string {
+	var result string
+	for i, c := range digits {
+		if i == 2 || i == 4 {
+			result += "."
+		}
+		result += string(c)
+	}
+	return result
+}
+
+// formatTime inserts a colon into a raw digit string: HHMM -> HH:MM
+func formatTime(digits string) string {
+	var result string
+	for i, c := range digits {
+		if i == 2 {
+			result += ":"
+		}
+		result += string(c)
+	}
+	return result
+}
+
+// validateDateDigits checks that partial date digits are valid so far.
+func validateDateDigits(d string) bool {
+	if len(d) >= 1 && d[0] > '3' {
+		return false
+	}
+	if len(d) >= 2 {
+		if d[0] == '0' && d[1] == '0' {
+			return false
+		}
+		if d[0] == '3' && d[1] > '1' {
+			return false
+		}
+	}
+	if len(d) >= 3 && d[2] > '1' {
+		return false
+	}
+	if len(d) >= 4 {
+		if d[2] == '0' && d[3] == '0' {
+			return false
+		}
+		if d[2] == '1' && d[3] > '2' {
+			return false
+		}
+	}
+	if len(d) >= 5 && d[4] > '2' {
+		return false
+	}
+	return true
+}
+
+// validateTimeDigits checks that partial time digits are valid so far.
+func validateTimeDigits(d string) bool {
+	if len(d) >= 1 && d[0] > '2' {
+		return false
+	}
+	if len(d) >= 2 && d[0] == '2' && d[1] > '3' {
+		return false
+	}
+	if len(d) >= 3 && d[2] > '5' {
+		return false
+	}
+	return true
 }
 
 // toAPIDate converts Swiss date format (DD.MM.YYYY) to API format (YYYY-MM-DD).
