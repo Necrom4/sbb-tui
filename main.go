@@ -48,6 +48,19 @@ func main() {
 		os.Exit(0)
 	}
 
+	if *date != "" {
+		if err := validateDate(*date); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+	}
+	if *time != "" {
+		if err := validateTime(*time); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+	}
+
 	// CLI flags override config file values.
 	cfg.From = *from
 	cfg.To = *to
@@ -67,4 +80,38 @@ func main() {
 		fmt.Println("fatal:", err)
 		os.Exit(1)
 	}
+}
+
+func validateDate(s string) error {
+	if len(s) != 10 || s[2] != '.' || s[5] != '.' {
+		return fmt.Errorf("invalid date format %q, expected DD.MM.YYYY", s)
+	}
+	for _, i := range []int{0, 1, 3, 4, 6, 7, 8, 9} {
+		if s[i] < '0' || s[i] > '9' {
+			return fmt.Errorf("invalid date format %q, expected DD.MM.YYYY", s)
+		}
+	}
+	day := int(s[0]-'0')*10 + int(s[1]-'0')
+	month := int(s[3]-'0')*10 + int(s[4]-'0')
+	if day < 1 || day > 31 || month < 1 || month > 12 {
+		return fmt.Errorf("invalid date %q: day must be 01-31, month must be 01-12", s)
+	}
+	return nil
+}
+
+func validateTime(s string) error {
+	if len(s) != 5 || s[2] != ':' {
+		return fmt.Errorf("invalid time format %q, expected HH:MM", s)
+	}
+	for _, i := range []int{0, 1, 3, 4} {
+		if s[i] < '0' || s[i] > '9' {
+			return fmt.Errorf("invalid time format %q, expected HH:MM", s)
+		}
+	}
+	hour := int(s[0]-'0')*10 + int(s[1]-'0')
+	minute := int(s[3]-'0')*10 + int(s[4]-'0')
+	if hour > 23 || minute > 59 {
+		return fmt.Errorf("invalid time %q: hours must be 00-23, minutes must be 00-59", s)
+	}
+	return nil
 }
