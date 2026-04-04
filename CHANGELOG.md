@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/Necrom4/sbb-tui/compare/v1.13.1...v1.13.2) (2026-04-04)
+
+
+### Bug Fixes
+
+* detail scroll not capped at content height ([60812f7](https://github.com/Necrom4/sbb-tui/commit/60812f782cb425e51f1dfcadb1adb574730921d3)), closes [#49](https://github.com/Necrom4/sbb-tui/issues/49) [#32](https://github.com/Necrom4/sbb-tui/issues/32)
+
 ## [1.13.1](https://github.com/Necrom4/sbb-tui/compare/v1.13.0...v1.13.1) (2026-04-03)
 
 
