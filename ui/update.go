@@ -135,7 +135,9 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.detailScrollY--
 			}
 		case "shift+down":
-			m.detailScrollY++
+			if max := m.maxDetailScroll(); m.detailScrollY < max {
+				m.detailScrollY++
+			}
 		}
 
 	case suggestTickMsg:

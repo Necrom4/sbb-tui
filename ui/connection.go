@@ -10,9 +10,9 @@ import (
 	"github.com/necrom4/sbb-tui/model"
 )
 
-func (m appModel) renderFullConnection(c model.Connection, width int) string {
+// buildDetailLines builds the raw content lines for a connection's detail view.
+func (m appModel) buildDetailLines(c model.Connection, innerWidth int) []string {
 	var lines []string
-	innerWidth := max(width-borderSize-(detailPaddingH*2), 0)
 
 	// Pre-compute widest label and value widths so platform values align.
 	labelCol := 0
@@ -69,6 +69,37 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 			}
 		}
 	}
+
+	return lines
+}
+
+// maxDetailScroll returns the maximum useful scroll offset for the current
+// connection's detail view. Returns 0 when there's nothing to scroll.
+func (m appModel) maxDetailScroll() int {
+	if len(m.connections) == 0 || m.resultIndex >= len(m.connections) {
+		return 0
+	}
+	c := m.connections[m.resultIndex]
+	boxWidth := max(m.width-borderSize*2-m.resultBoxWidth(), 0)
+	innerWidth := max(boxWidth-borderSize-(detailPaddingH*2), 0)
+
+	lines := m.buildDetailLines(c, innerWidth)
+	content := strings.Join(lines, "\n")
+	wrapped := m.styles.text.Width(innerWidth).Render(content)
+	visLines := strings.Split(wrapped, "\n")
+
+	detailFrame := m.styles.detailedResult.GetVerticalFrameSize()
+	boxHeight := max(m.resultsHeight()-detailFrame, 0)
+
+	if len(visLines) <= boxHeight {
+		return 0
+	}
+	return len(visLines) - boxHeight
+}
+
+func (m appModel) renderFullConnection(c model.Connection, width int) string {
+	innerWidth := max(width-borderSize-(detailPaddingH*2), 0)
+	lines := m.buildDetailLines(c, innerWidth)
 
 	detailFrame := m.styles.detailedResult.GetVerticalFrameSize()
 	boxHeight := max(m.resultsHeight()-detailFrame, 0)
