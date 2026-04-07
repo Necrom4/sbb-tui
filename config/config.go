@@ -54,7 +54,7 @@ type Theme struct {
 // DefaultTheme returns the SBB brand color scheme.
 func DefaultTheme() Theme {
 	return Theme{
-		Text:              "#FFFFFF",
+		Text:              "white",
 		TextMuted:         "#888888",
 		Error:             "#D82E20",
 		Warning:           "#D82E20",
@@ -68,7 +68,7 @@ func DefaultTheme() Theme {
 		BadgeModelBg:      "#D82E20",
 		BadgeCompanyFg:    "#484848",
 		BadgeCompanyBg:    "#FFFFFF",
-		Logo:              "#FFFFFF",
+		Logo:              "white",
 	}
 }
 
