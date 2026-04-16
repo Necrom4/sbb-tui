@@ -23,6 +23,7 @@ func main() {
 	timeStr := flag.String("time", "", "Pre-fill time [HH:MM]")
 	arrival := flag.Bool("arrival", false, "Set date/time as arrival instead of departure time")
 	flag.Bool("nerdfont", true, "Use Nerd Font icons")
+	cursorBlink := flag.Bool("cursor-blink", true, "Enable terminal cursor blink")
 	showVersion := flag.BoolP("version", "v", false, "Print version and exit")
 
 	// --help
@@ -73,6 +74,8 @@ func main() {
 		nf, _ := flag.CommandLine.GetBool("nerdfont")
 		cfg.NerdFont = nf
 	}
+
+	cfg.DisableCursorBlink = !*cursorBlink
 
 	m := ui.NewModel(cfg)
 

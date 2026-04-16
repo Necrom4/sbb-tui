@@ -65,8 +65,9 @@ type appModel struct {
 	inputs         []textinput.Model
 	icons          iconSet
 	styles         styles
-	nerdFont       bool
-	isArrivalTime  bool
+	nerdFont           bool
+	isArrivalTime      bool
+	disableCursorBlink bool
 	connections    []model.Connection
 	loading        bool
 	errorMsg       error
@@ -94,7 +95,8 @@ func NewModel(cfg config.Config) appModel {
 		icons:          newIconSet(cfg.NerdFont),
 		styles:         newStyles(cfg.Theme),
 		nerdFont:       cfg.NerdFont,
-		isArrivalTime:  cfg.IsArrivalTime,
+		isArrivalTime:     cfg.IsArrivalTime,
+		disableCursorBlink: cfg.DisableCursorBlink,
 		currentVersion: cfg.CurrentVersion,
 	}
 
@@ -152,6 +154,9 @@ func NewModel(cfg config.Config) appModel {
 
 // Init implements tea.Model.
 func (m appModel) Init() tea.Cmd {
+	if m.disableCursorBlink {
+		return checkVersionCmd(m.currentVersion)
+	}
 	return tea.Batch(textinput.Blink, checkVersionCmd(m.currentVersion))
 }
 
