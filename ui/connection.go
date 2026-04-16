@@ -109,13 +109,40 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 	wrapped := m.styles.text.Width(innerWidth).Render(content)
 	visLines := strings.Split(wrapped, "\n")
 
+	maxScroll := maxDetailScrollFromLines(visLines, boxHeight)
+
 	// Scroll and clamp to the visible area.
+	scrollY := m.detailScrollY
 	if len(visLines) > boxHeight {
-		scrollY := min(m.detailScrollY, len(visLines)-boxHeight)
+		scrollY = min(scrollY, len(visLines)-boxHeight)
 		visLines = visLines[scrollY : scrollY+boxHeight]
 	}
 
+	// Add scroll indicators when content is scrollable and at scroll limits.
+	if maxScroll > 0 {
+		innerWidth := max(width-borderSize-(detailPaddingH*2), 0)
+		// Up arrow at top-right when scrolled down.
+		if scrollY > 0 {
+			upArrow := m.styles.text.Render(m.icons.arrowUp)
+			visLines[0] = strings.Repeat(" ", max(innerWidth-lipgloss.Width(upArrow), 0)) + upArrow
+		}
+		// Down arrow at bottom-left when not at bottom.
+		if scrollY < maxScroll {
+			downArrow := m.styles.text.Render(m.icons.arrowDown)
+			lastIdx := len(visLines) - 1
+			visLines[lastIdx] = downArrow + strings.Repeat(" ", max(innerWidth-lipgloss.Width(downArrow), 0))
+		}
+	}
+
 	return m.styles.detailedResult.Width(width).Height(boxHeight).Render(strings.Join(visLines, "\n"))
+}
+
+// maxDetailScrollFromLines computes max scroll from already-wrapped visual lines.
+func maxDetailScrollFromLines(visLines []string, boxHeight int) int {
+	if len(visLines) <= boxHeight {
+		return 0
+	}
+	return len(visLines) - boxHeight
 }
 
 func (m appModel) renderJourneySection(section model.Section, width, labelCol, platformCol int, isFirst, isLast bool) []string {
