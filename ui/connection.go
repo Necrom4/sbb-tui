@@ -110,12 +110,25 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 	visLines := strings.Split(wrapped, "\n")
 
 	// Scroll and clamp to the visible area.
-	if len(visLines) > boxHeight {
+	isScrollable := len(visLines) > boxHeight
+	if isScrollable {
 		scrollY := min(m.detailScrollY, len(visLines)-boxHeight)
 		visLines = visLines[scrollY : scrollY+boxHeight]
 	}
 
-	return m.styles.detailedResult.Width(width).Height(boxHeight).Render(strings.Join(visLines, "\n"))
+	innerContent := strings.Join(visLines, "\n")
+
+	// Add ▲/▼ scroll indicators at top-right and bottom-left when scrollable.
+	if isScrollable {
+		upIndicator := m.styles.textMuted.Render(m.icons.scrollUp)
+		downIndicator := m.styles.textMuted.Render(m.icons.scrollDown)
+		upStr := lipgloss.Place(width, boxHeight, lipgloss.Right, lipgloss.Top, upIndicator)
+		downStr := lipgloss.Place(width, boxHeight, lipgloss.Left, lipgloss.Bottom, downIndicator)
+		innerContent = lipgloss.JoinVertical(lipgloss.Top, upStr, innerContent)
+		innerContent = lipgloss.JoinVertical(lipgloss.Top, innerContent, downStr)
+	}
+
+	return m.styles.detailedResult.Width(width).Height(boxHeight).Render(innerContent)
 }
 
 func (m appModel) renderJourneySection(section model.Section, width, labelCol, platformCol int, isFirst, isLast bool) []string {

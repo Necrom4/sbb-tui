@@ -13,18 +13,20 @@ type iconSet struct {
 	prompt    string
 
 	// Mode-invariant
-	towards   string
-	filledDot string
-	hollowDot string
-	horizLine string
-	vertLine  string
-	keyTab    string
-	keyEnter  string
-	keySpace  string
-	keyUpDw   string
-	keyUPDW   string
-	keyRight  string
-	keyEsc    string
+	towards    string
+	filledDot  string
+	hollowDot  string
+	horizLine  string
+	vertLine   string
+	scrollUp   string
+	scrollDown string
+	keyTab     string
+	keyEnter   string
+	keySpace   string
+	keyUpDw    string
+	keyUPDW    string
+	keyRight   string
+	keyEsc     string
 }
 
 func newIconSet(nerdFont bool) iconSet {
@@ -34,10 +36,12 @@ func newIconSet(nerdFont bool) iconSet {
 		stop:     "Stop",
 		towards:  "→",
 
-		filledDot: "●",
-		hollowDot: "○",
-		horizLine: "─",
-		vertLine:  "│",
+		filledDot:  "●",
+		hollowDot:  "○",
+		horizLine:  "─",
+		vertLine:   "│",
+		scrollUp:   "▲",
+		scrollDown: "▼",
 
 		keyTab:   "⇥",
 		keyEnter: "↵",
@@ -56,6 +60,8 @@ func newIconSet(nerdFont bool) iconSet {
 		icons.vehicle = ""
 		icons.walk = ""
 		icons.prompt = " "
+		icons.scrollUp = "▴"
+		icons.scrollDown = "▾"
 	} else {
 		icons.arrival = "⤙"
 		icons.departure = "⤚"
@@ -64,6 +70,8 @@ func newIconSet(nerdFont bool) iconSet {
 		icons.vehicle = "◇"
 		icons.walk = "walk:"
 		icons.prompt = "⏵ "
+		icons.scrollUp = "▲"
+		icons.scrollDown = "▼"
 	}
 
 	return icons
