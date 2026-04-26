@@ -44,6 +44,14 @@ go install github.com/necrom4/sbb-tui@latest
 yay -S sbb-tui # or equivalent AUR package manager
 ```
 
+### Nixpkgs
+
+`sbb-tui` is available in `nixpkgs-unstable` or can be temporarily installed with:
+
+```sh
+nix-shell -p sbb-tui
+```
+
 > [!NOTE]
 > Or download your preferred executable from [Releases](https://github.com/Necrom4/sbb-tui/releases) directly.
 
