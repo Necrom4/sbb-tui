@@ -12,14 +12,15 @@ import (
 
 // Config holds CLI flag values to pre-fill the TUI form.
 type Config struct {
-	From           string
-	To             string
-	Date           string
-	Time           string
-	IsArrivalTime  bool
-	NerdFont       bool
-	Theme          Theme
-	CurrentVersion string
+	From               string
+	To                 string
+	Date               string
+	Time               string
+	IsArrivalTime      bool
+	NerdFont           bool
+	DisableCursorBlink bool
+	Theme              Theme
+	CurrentVersion     string
 }
 
 // UIConfig groups all UI-related settings.
