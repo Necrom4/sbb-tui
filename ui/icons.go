@@ -25,6 +25,10 @@ type iconSet struct {
 	keyUPDW   string
 	keyRight  string
 	keyEsc    string
+
+	// Scroll indicators
+	arrowUp   string
+	arrowDown string
 }
 
 func newIconSet(nerdFont bool) iconSet {
@@ -56,6 +60,8 @@ func newIconSet(nerdFont bool) iconSet {
 		icons.vehicle = ""
 		icons.walk = ""
 		icons.prompt = " "
+		icons.arrowUp = "▲"
+		icons.arrowDown = "▼"
 	} else {
 		icons.arrival = "⤙"
 		icons.departure = "⤚"
@@ -64,6 +70,8 @@ func newIconSet(nerdFont bool) iconSet {
 		icons.vehicle = "◇"
 		icons.walk = "walk:"
 		icons.prompt = "⏵ "
+		icons.arrowUp = "▲"
+		icons.arrowDown = "▼"
 	}
 
 	return icons
