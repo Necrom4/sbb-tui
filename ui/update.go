@@ -179,6 +179,9 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds := []tea.Cmd{next}
 		if m.animations && m.onStartScreen() {
 			if logoBuildFinished(finished) {
+				cmds = append(cmds, m.anim.Start(animTaglineBuild, taglineBuildDuration))
+			}
+			if taglineBuildFinished(finished) {
 				cmds = append(cmds,
 					m.anim.Start(animLogoShine, shineDuration),
 					m.anim.Start(animTextShine, shineDuration),

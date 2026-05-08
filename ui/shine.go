@@ -222,6 +222,11 @@ func (m appModel) renderStartTagline(text string) string {
 	if !m.animations {
 		return m.styles.textMuted.Render(text)
 	}
+	// Hide the tagline until its build animation has started, so the
+	// logo build animation plays alone first.
+	if !m.anim.Registered(animTaglineBuild) {
+		return strings.Repeat(" ", lipgloss.Width(text))
+	}
 	if progress, active := m.anim.Progress(animTaglineBuild); active {
 		return renderTaglineBuild(text, m.styles.textMutedBase, progress)
 	}

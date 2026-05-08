@@ -53,6 +53,13 @@ func (a *animator) Stop(name string) {
 	}
 }
 
+// Registered reports whether a named animation has ever been started,
+// regardless of whether it is currently running or has finished.
+func (a animator) Registered(name string) bool {
+	_, ok := a.anims[name]
+	return ok
+}
+
 // Elapsed returns the time since a named animation started and whether it is currently running.
 func (a animator) Elapsed(name string) (time.Duration, bool) {
 	an, ok := a.anims[name]
