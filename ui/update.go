@@ -177,8 +177,16 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case animationTickMsg:
 		finished, next := m.anim.Tick()
 		cmds := []tea.Cmd{next}
-		if m.animations && m.onStartScreen() && shineCycleFinished(finished) {
-			cmds = append(cmds, shineRestartCmd())
+		if m.animations && m.onStartScreen() {
+			if logoBuildFinished(finished) {
+				cmds = append(cmds,
+					m.anim.Start(animLogoShine, shineDuration),
+					m.anim.Start(animTextShine, shineDuration),
+				)
+			}
+			if shineCycleFinished(finished) {
+				cmds = append(cmds, shineRestartCmd())
+			}
 		}
 		return m, tea.Batch(cmds...)
 

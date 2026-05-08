@@ -203,6 +203,9 @@ func (m appModel) renderLogo(logo string) string {
 	if !m.animations {
 		return m.styles.logo.Render(logo)
 	}
+	if progress, active := m.anim.Progress(animLogoBuild); active {
+		return renderLogoBuild(logo, m.styles.logoBase, progress)
+	}
 	progress, active := m.anim.Progress(animLogoShine)
 	if !active {
 		return m.styles.logo.Render(logo)
