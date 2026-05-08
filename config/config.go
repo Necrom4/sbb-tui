@@ -18,14 +18,16 @@ type Config struct {
 	Time           string
 	IsArrivalTime  bool
 	NerdFont       bool
+	Animations     bool
 	Theme          Theme
 	CurrentVersion string
 }
 
 // UIConfig groups all UI-related settings.
 type UIConfig struct {
-	NerdFont *bool `yaml:"nerdfont"`
-	Theme    Theme `yaml:"theme"`
+	Animations *bool `yaml:"animations"`
+	NerdFont   *bool `yaml:"nerdfont"`
+	Theme      Theme `yaml:"theme"`
 }
 
 type fileConfig struct {
@@ -118,8 +120,9 @@ func loadFile() (fileConfig, error) {
 // LoadConfig reads the config file and returns a Config with defaults merged.
 func LoadConfig() (Config, error) {
 	result := Config{
-		NerdFont: true,
-		Theme:    DefaultTheme(),
+		NerdFont:   true,
+		Animations: true,
+		Theme:      DefaultTheme(),
 	}
 
 	fc, err := loadFile()
@@ -127,6 +130,9 @@ func LoadConfig() (Config, error) {
 		return result, err
 	}
 
+	if fc.UI.Animations != nil {
+		result.Animations = *fc.UI.Animations
+	}
 	if fc.UI.NerdFont != nil {
 		result.NerdFont = *fc.UI.NerdFont
 	}

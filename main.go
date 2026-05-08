@@ -22,6 +22,7 @@ func main() {
 	date := flag.String("date", "", "Pre-fill date [DD.MM.YYYY]")
 	timeStr := flag.String("time", "", "Pre-fill time [HH:MM]")
 	arrival := flag.Bool("arrival", false, "Set date/time as arrival instead of departure time")
+	flag.Bool("animations", true, "Play UI animations")
 	flag.Bool("nerdfont", true, "Use Nerd Font icons")
 	showVersion := flag.BoolP("version", "v", false, "Print version and exit")
 
@@ -68,6 +69,11 @@ func main() {
 	cfg.Time = *timeStr
 	cfg.IsArrivalTime = *arrival
 	cfg.CurrentVersion = version
+
+	if flag.CommandLine.Changed("animations") {
+		a, _ := flag.CommandLine.GetBool("animations")
+		cfg.Animations = a
+	}
 
 	if flag.CommandLine.Changed("nerdfont") {
 		nf, _ := flag.CommandLine.GetBool("nerdfont")

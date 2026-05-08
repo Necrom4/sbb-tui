@@ -19,6 +19,9 @@ const (
 )
 
 func (m appModel) renderLogo(logo string) string {
+	if !m.animations {
+		return m.styles.logo.Render(logo)
+	}
 	progress, active := m.anim.Progress(animLogoShine)
 	if !active {
 		return m.styles.logo.Render(logo)

@@ -83,6 +83,7 @@ Add your optional config at `$HOME/.config/sbb-tui/config.yaml`
 ```yaml
 # default configuration
 ui:
+  animations: true
   nerdfont: true
   theme:
     text:            "#FFFFFF"
@@ -114,6 +115,7 @@ Usage:
   sbb-tui [flags]
 
 Flags:
+      --animations    Play UI animations (`=false` to disable)
       --arrival       Use arrival time instead of departure time
       --date string   Pre-fill date (DD.MM.YYYY)
       --from string   Pre-fill departure station
