@@ -39,24 +39,27 @@ func (a *animator) Start(name string, duration time.Duration) tea.Cmd {
 	return animationTickCmd()
 }
 
-// Tick advances all animations and returns a Cmd to schedule the next frame, or nil when idle.
-func (a *animator) Tick() tea.Cmd {
+// Tick advances all animations. It returns the names of animations
+// that just finished on this tick and a Cmd to schedule the next
+// frame (nil when no animation is still running).
+func (a *animator) Tick() (finished []string, next tea.Cmd) {
 	anyRunning := false
 	now := time.Now()
-	for _, an := range a.anims {
+	for name, an := range a.anims {
 		if an.done {
 			continue
 		}
 		if now.Sub(an.start) >= an.duration {
 			an.done = true
+			finished = append(finished, name)
 			continue
 		}
 		anyRunning = true
 	}
-	if !anyRunning {
-		return nil
+	if anyRunning {
+		next = animationTickCmd()
 	}
-	return animationTickCmd()
+	return finished, next
 }
 
 // Progress returns the [0,1] progress of a named animation and whether it is currently active.
