@@ -174,7 +174,17 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case animationTickMsg:
-		return m, m.anim.Tick()
+		next := m.anim.Tick()
+		if next == nil && m.animations && m.onStartScreen() {
+			return m, logoShineRestartCmd()
+		}
+		return m, next
+
+	case logoShineRestartMsg:
+		if m.animations && m.onStartScreen() {
+			return m, m.anim.Start(animLogoShine, logoShineDuration)
+		}
+		return m, nil
 	}
 
 	cmd := m.updateInputs(msg)

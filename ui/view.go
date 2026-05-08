@@ -219,6 +219,10 @@ func (m appModel) renderResults() string {
 	return lipgloss.JoinVertical(lipgloss.Left, boxes...)
 }
 
+func (m appModel) onStartScreen() bool {
+	return m.errorMsg == nil && !m.loading && len(m.connections) == 0 && !m.searched
+}
+
 func (m appModel) renderStartScreen() string {
 	logo := sbbLogo
 	if m.nerdFont {

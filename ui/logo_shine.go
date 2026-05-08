@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/lucasb-eyer/go-colorful"
 )
@@ -13,10 +14,19 @@ const animLogoShine = "logoShine"
 
 const (
 	logoShineDuration   = 800 * time.Millisecond
-	logoShineBandWidth  = 28.0 // diagonal half-width of the dark band
-	logoShineDarkDelta  = 0.30 // max lightness reduction at the band's center (0..1)
-	logoShinePaletteLen = 65   // pre-built color steps; higher = smoother
+	logoShineRepeatGap  = 2 * time.Second // pause between successive sweeps on the start screen
+	logoShineBandWidth  = 28.0            // diagonal half-width of the dark band
+	logoShineDarkDelta  = 0.30            // max lightness reduction at the band's center (0..1)
+	logoShinePaletteLen = 65              // pre-built color steps; higher = smoother
 )
+
+type logoShineRestartMsg struct{}
+
+func logoShineRestartCmd() tea.Cmd {
+	return tea.Tick(logoShineRepeatGap, func(time.Time) tea.Msg {
+		return logoShineRestartMsg{}
+	})
+}
 
 func (m appModel) renderLogo(logo string) string {
 	if !m.animations {
