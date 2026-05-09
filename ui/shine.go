@@ -148,13 +148,55 @@ type fadeOpts struct {
 	norm     func(row, col int) float64
 }
 
-// renderFade paints `text` against a black→base gradient, with each
-// non-space rune fading in over its own window.
-func renderFade(text string, base colorful.Color, opts fadeOpts) string {
+// renderFade paints `text` with each non-space rune fading in over
+// its own window. When the terminal background is known the gradient
+// runs from that background colour to `base`, producing a true
+// invisible-to-base fade. Otherwise cells stay as spaces until their
+// window opens and only then start fading from a dark anchor, so we
+// never flash a stale colour against a mismatched background.
+func (m appModel) renderFade(text string, base colorful.Color, opts fadeOpts) string {
+	if m.styles.backgroundKnown {
+		pal := newPalette(m.styles.background, base)
+		return renderGrid(text, pal, func(row, col int) float64 {
+			return windowedFade(opts.progress, opts.norm(row, col), opts.window, opts.shift)
+		})
+	}
+	return renderFadeFallback(text, base, opts)
+}
+
+// renderFadeFallback runs the fade when the terminal background is
+// not known: cells are spaces before their window opens, then fade
+// from a dark anchor to `base` over the window.
+func renderFadeFallback(text string, base colorful.Color, opts fadeOpts) string {
 	pal := newPalette(colorBlack, base)
-	return renderGrid(text, pal, func(row, col int) float64 {
-		return windowedFade(opts.progress, opts.norm(row, col), opts.window, opts.shift)
-	})
+	lines, maxWidth := textBounds(text)
+
+	var b strings.Builder
+	b.Grow(len(text) * 6)
+	for row, line := range lines {
+		col := 0
+		for _, r := range line {
+			if r == ' ' {
+				b.WriteRune(r)
+				col++
+				continue
+			}
+			f := windowedFade(opts.progress, opts.norm(row, col), opts.window, opts.shift)
+			if f <= 0 {
+				b.WriteByte(' ')
+			} else {
+				b.WriteString(pal.render(f, r))
+			}
+			col++
+		}
+		if pad := maxWidth - col; pad > 0 {
+			b.WriteString(strings.Repeat(" ", pad))
+		}
+		if row < len(lines)-1 {
+			b.WriteByte('\n')
+		}
+	}
+	return b.String()
 }
 
 // windowedFade returns a smoothstepped factor in [0, 1] for a glyph
@@ -268,7 +310,7 @@ func (m appModel) renderLogo(logo string) string {
 		return m.styles.logo.Render(logo)
 	}
 	if progress, active := m.anim.Progress(animLogoBuild); active {
-		return renderLogoBuild(logo, m.styles.logoBase, progress)
+		return m.renderLogoBuild(logo, m.styles.logoBase, progress)
 	}
 	progress, active := m.anim.Progress(animLogoShine)
 	if !active {
@@ -292,7 +334,7 @@ func (m appModel) renderStartTagline(text string) string {
 		return strings.Repeat(" ", lipgloss.Width(text))
 	}
 	if progress, active := m.anim.Progress(animTaglineBuild); active {
-		return renderTaglineBuild(text, m.styles.textMutedBase, progress)
+		return m.renderTaglineBuild(text, m.styles.textMutedBase, progress)
 	}
 	progress, active := m.anim.Progress(animTextShine)
 	if !active {

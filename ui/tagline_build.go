@@ -17,13 +17,13 @@ const (
 // renderTaglineBuild types `text` left-to-right, with each rune
 // fading in over a short window. Character 0 starts mid-fade so the
 // reveal feels continuous with whatever animation preceded it.
-func renderTaglineBuild(text string, base colorful.Color, progress float64) string {
+func (m appModel) renderTaglineBuild(text string, base colorful.Color, progress float64) string {
 	n := utf8.RuneCountInString(text)
 	if n == 0 {
 		return text
 	}
 	denom := float64(n)
-	return renderFade(text, base, fadeOpts{
+	return m.renderFade(text, base, fadeOpts{
 		progress: progress,
 		window:   taglineBuildFadeWindow,
 		shift:    -taglineBuildFadeWindow / 2,

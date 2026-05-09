@@ -15,7 +15,7 @@ const (
 )
 
 // renderLogoBuild fades the logo in from the centre outward.
-func renderLogoBuild(logo string, base colorful.Color, progress float64) string {
+func (m appModel) renderLogoBuild(logo string, base colorful.Color, progress float64) string {
 	lines, maxWidth := textBounds(logo)
 	cx := float64(maxWidth-1) / 2
 	cy := float64(len(lines)-1) / 2
@@ -24,7 +24,7 @@ func renderLogoBuild(logo string, base colorful.Color, progress float64) string 
 		dMax = 1
 	}
 
-	return renderFade(logo, base, fadeOpts{
+	return m.renderFade(logo, base, fadeOpts{
 		progress: progress,
 		window:   logoBuildFadeWindow,
 		norm: func(row, col int) float64 {
