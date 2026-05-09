@@ -19,12 +19,160 @@ const (
 	shineDuration      = 800 * time.Millisecond
 	shineRepeatGap     = 2 * time.Second
 	shineDelta         = 0.30 // max lightness shift at the band's center (0..1)
+	shineGradientSize  = 65
 	logoShineBandWidth = 28.0
 	textShineBandWidth = 8.0
 
 	// shineLumaPivot picks shine polarity: bases brighter than this darken, the rest brighten.
 	shineLumaPivot = 0.6
 )
+
+// Color and rendering primitives shared by every animation effect.
+
+// relLuminance returns the WCAG relative luminance of c in [0, 1].
+func relLuminance(c colorful.Color) float64 {
+	return 0.2126*linearize(c.R) + 0.7152*linearize(c.G) + 0.0722*linearize(c.B)
+}
+
+func linearize(channel float64) float64 {
+	if channel <= 0.03928 {
+		return channel / 12.92
+	}
+	return math.Pow((channel+0.055)/1.055, 2.4)
+}
+
+// shineTarget picks the neutral toward which a shine should blend
+// `base`: black for already-bright bases, white for darker ones.
+func shineTarget(base colorful.Color) colorful.Color {
+	if relLuminance(base) >= shineLumaPivot {
+		return colorBlack
+	}
+	return colorWhite
+}
+
+func clamp01(x float64) float64 {
+	if x < 0 {
+		return 0
+	}
+	if x > 1 {
+		return 1
+	}
+	return x
+}
+
+type paletteCell struct {
+	prefix, suffix string
+}
+
+// palette holds pre-rendered ANSI prefix/suffix pairs for each step
+// of a Lab-blended gradient between two colors.
+type palette [shineGradientSize]paletteCell
+
+// newPalette builds a gradient blending from `from` (factor 0) to `to` (factor 1) in Lab space.
+func newPalette(from, to colorful.Color) palette {
+	var p palette
+	for i := range p {
+		f := float64(i) / float64(shineGradientSize-1)
+		c := from.BlendLab(to, f).Clamped()
+		p[i] = makePaletteCell(lipgloss.Color(c.Hex()))
+	}
+	return p
+}
+
+func makePaletteCell(c lipgloss.Color) paletteCell {
+	const sentinel = "\x00"
+	rendered := lipgloss.NewStyle().Foreground(c).Render(sentinel)
+	idx := strings.Index(rendered, sentinel)
+	if idx < 0 {
+		return paletteCell{}
+	}
+	return paletteCell{prefix: rendered[:idx], suffix: rendered[idx+len(sentinel):]}
+}
+
+// render returns the rune wrapped in the SGR pair for the given factor.
+func (p palette) render(factor float64, r rune) string {
+	idx := int(math.Round(clamp01(factor) * float64(shineGradientSize-1)))
+	cell := p[idx]
+	return cell.prefix + string(r) + cell.suffix
+}
+
+// textBounds returns the lines of `text` and the visible width of the widest one.
+func textBounds(text string) (lines []string, maxWidth int) {
+	lines = strings.Split(text, "\n")
+	for _, ln := range lines {
+		if w := lipgloss.Width(ln); w > maxWidth {
+			maxWidth = w
+		}
+	}
+	return lines, maxWidth
+}
+
+// renderGrid walks `text` line by line and writes each non-space rune
+// styled by `pal` at the factor returned by `factor(row, col)`.
+// Spaces are emitted unchanged; lines are right-padded to the widest
+// line so lipgloss centring does not shift shorter rows.
+func renderGrid(text string, pal palette, factor func(row, col int) float64) string {
+	lines, maxWidth := textBounds(text)
+
+	var b strings.Builder
+	b.Grow(len(text) * 6)
+	for row, line := range lines {
+		col := 0
+		for _, r := range line {
+			if r == ' ' {
+				b.WriteRune(r)
+				col++
+				continue
+			}
+			b.WriteString(pal.render(factor(row, col), r))
+			col++
+		}
+		if pad := maxWidth - col; pad > 0 {
+			b.WriteString(strings.Repeat(" ", pad))
+		}
+		if row < len(lines)-1 {
+			b.WriteByte('\n')
+		}
+	}
+	return b.String()
+}
+
+// fadeOpts configures a windowed-fade render: each glyph reveals over
+// a small `window` of progress, with its position computed by `norm`
+// (0 = first to appear, 1 = last). `shift` slides every cell's window
+// by a constant amount.
+type fadeOpts struct {
+	progress float64
+	window   float64
+	shift    float64
+	norm     func(row, col int) float64
+}
+
+// renderFade paints `text` against a black→base gradient, with each
+// non-space rune fading in over its own window.
+func renderFade(text string, base colorful.Color, opts fadeOpts) string {
+	pal := newPalette(colorBlack, base)
+	return renderGrid(text, pal, func(row, col int) float64 {
+		return windowedFade(opts.progress, opts.norm(row, col), opts.window, opts.shift)
+	})
+}
+
+// windowedFade returns a smoothstepped factor in [0, 1] for a glyph
+// whose reveal window is centred around `norm * (1 - window) + shift`.
+func windowedFade(progress, norm, window, shift float64) float64 {
+	start := norm*(1-window) + shift
+	end := start + window
+	if progress <= start {
+		return 0
+	}
+	if progress >= end {
+		return 1
+	}
+	t := (progress - start) / window
+	return t * t * (3 - 2*t)
+}
+
+// Shine animation orchestration.
 
 type shineRestartMsg struct{}
 

@@ -96,3 +96,34 @@ func newStyles(theme config.Theme) styles {
 		textMutedBase: parseColor(theme.TextMuted),
 	}
 }
+
+var (
+	colorBlack = colorful.Color{R: 0, G: 0, B: 0}
+	colorWhite = colorful.Color{R: 1, G: 1, B: 1}
+)
+
+// parseColor converts a theme color string (hex or named) to a colorful.Color.
+func parseColor(s string) colorful.Color {
+	if c, err := colorful.Hex(s); err == nil {
+		return c
+	}
+	switch s {
+	case "white":
+		return colorWhite
+	case "black":
+		return colorBlack
+	case "red":
+		return colorful.Color{R: 1, G: 0, B: 0}
+	case "green":
+		return colorful.Color{R: 0, G: 1, B: 0}
+	case "blue":
+		return colorful.Color{R: 0, G: 0, B: 1}
+	case "yellow":
+		return colorful.Color{R: 1, G: 1, B: 0}
+	case "cyan":
+		return colorful.Color{R: 0, G: 1, B: 1}
+	case "magenta":
+		return colorful.Color{R: 1, G: 0, B: 1}
+	}
+	return colorWhite
+}
