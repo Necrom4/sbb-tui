@@ -1,3 +1,24 @@
+# [1.14.0](https://github.com/Necrom4/sbb-tui/compare/v1.13.4...v1.14.0) (2026-05-09)
+
+
+### Bug Fixes
+
+* **ui.shine:** blend toward neutral in Lab to avoid saturated logo shines ([9a25185](https://github.com/Necrom4/sbb-tui/commit/9a25185c6427b4bc017e1180994b49ebd1f4c178)), closes [#E9F7](https://github.com/Necrom4/sbb-tui/issues/E9F7)
+* **ui.shine:** synchronize logo and tagline shines on a shared cycle ([c16a568](https://github.com/Necrom4/sbb-tui/commit/c16a568f41a10f9e7197185d0d37c0a27ddd1607))
+
+
+### Features
+
+* **config:** add 'animations' setting and flag ([1d18bef](https://github.com/Necrom4/sbb-tui/commit/1d18befa619edca3cb3ffe9f976ba32214c9dd2c))
+* **ui.animation:** loop logo shine while on the start screen ([a7f3739](https://github.com/Necrom4/sbb-tui/commit/a7f3739c8db8017d98fa034cc5a341ff72fba126))
+* **ui:** add animations ([3f7c8e2](https://github.com/Necrom4/sbb-tui/commit/3f7c8e2e96a97efa0671078c04819a7ca38d1a15)), closes [#61](https://github.com/Necrom4/sbb-tui/issues/61)
+* **ui:** add logo shine startup animation ([cabc976](https://github.com/Necrom4/sbb-tui/commit/cabc9765437248497a8c8e52805e418e17c3fc2e))
+* **ui:** add tagline shine on the start screen ([6781c0c](https://github.com/Necrom4/sbb-tui/commit/6781c0cda6258f69eaf676152f2c039ca145de6c))
+* **ui:** build the logo from the center outward on startup ([c7a523a](https://github.com/Necrom4/sbb-tui/commit/c7a523ae89ffc07c9188003d1e9048f3d73b91b6))
+* **ui:** replace ellipsis with a Braille spinner while loading ([5dd26c9](https://github.com/Necrom4/sbb-tui/commit/5dd26c9f40303f6521e64bea625467c520bd7739))
+* **ui:** set typewriter effect for the welcome message on startup ([c79e56d](https://github.com/Necrom4/sbb-tui/commit/c79e56d7088d6e5d3f07d8de767deb19038fd5ba))
+* **ui:** start the typewriter effect only after the logo build finishes ([58edfa6](https://github.com/Necrom4/sbb-tui/commit/58edfa66b39a8c4500470f0f2b556ae917a96301))
+
 ## [1.13.4](https://github.com/Necrom4/sbb-tui/compare/v1.13.3...v1.13.4) (2026-04-07)
 
 
