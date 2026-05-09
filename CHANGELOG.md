@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/Necrom4/sbb-tui/compare/v1.14.1...v1.14.2) (2026-05-09)
+
+
+### Bug Fixes
+
+* **ui:** add removed icons ([80ce1c4](https://github.com/Necrom4/sbb-tui/commit/80ce1c471b9f913d5ccf4a0938e7005a7fc8dbda))
+
 ## [1.14.1](https://github.com/Necrom4/sbb-tui/compare/v1.14.0...v1.14.1) (2026-05-09)
 
 
