@@ -178,18 +178,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		finished, next := m.anim.Tick()
 		cmds := []tea.Cmd{next}
 		if m.animations && m.onStartScreen() {
-			if logoBuildFinished(finished) {
-				cmds = append(cmds, m.anim.Start(animTaglineBuild, taglineBuildDuration))
-			}
-			if taglineBuildFinished(finished) {
-				cmds = append(cmds,
-					m.anim.Start(animLogoShine, shineDuration),
-					m.anim.Start(animTextShine, shineDuration),
-				)
-			}
-			if shineCycleFinished(finished) {
-				cmds = append(cmds, shineRestartCmd())
-			}
+			cmds = append(cmds, m.onAnimationsFinished(finished)...)
 		}
 		return m, tea.Batch(cmds...)
 
@@ -197,10 +186,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.animations || !m.onStartScreen() {
 			return m, nil
 		}
-		return m, tea.Batch(
-			m.anim.Start(animLogoShine, shineDuration),
-			m.anim.Start(animTextShine, shineDuration),
-		)
+		return m, m.startShineCycle()
 	}
 
 	cmd := m.updateInputs(msg)

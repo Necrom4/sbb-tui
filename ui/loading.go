@@ -26,8 +26,7 @@ func (m appModel) renderLoading() string {
 	}
 	frame := loadingFrames[0]
 	if elapsed, ok := m.anim.Elapsed(animLoading); ok {
-		idx := int(elapsed/loadingFrameTime) % len(loadingFrames)
-		frame = loadingFrames[idx]
+		frame = loadingFrames[int(elapsed/loadingFrameTime)%len(loadingFrames)]
 	}
 	return "\n  Searching connections " + string(frame)
 }
