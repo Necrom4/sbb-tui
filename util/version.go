@@ -1,3 +1,4 @@
+// Package util provides generic helpers
 package util
 
 import (

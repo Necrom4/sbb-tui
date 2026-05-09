@@ -82,11 +82,11 @@ func newPalette(from, to colorful.Color) palette {
 func makePaletteCell(c lipgloss.Color) paletteCell {
 	const sentinel = "\x00"
 	rendered := lipgloss.NewStyle().Foreground(c).Render(sentinel)
-	idx := strings.Index(rendered, sentinel)
-	if idx < 0 {
+	prefix, suffix, ok := strings.Cut(rendered, sentinel)
+	if !ok {
 		return paletteCell{}
 	}
-	return paletteCell{prefix: rendered[:idx], suffix: rendered[idx+len(sentinel):]}
+	return paletteCell{prefix: prefix, suffix: suffix}
 }
 
 // render returns the rune wrapped in the SGR pair for the given factor.

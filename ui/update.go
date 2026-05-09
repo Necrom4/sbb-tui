@@ -397,26 +397,28 @@ func posOfDigit(s string, n int) int {
 
 // formatDate inserts dots into a raw digit string: DDMMYYYY -> DD.MM.YYYY
 func formatDate(digits string) string {
-	var result string
+	var b strings.Builder
+	b.Grow(len(digits) + 2)
 	for i, c := range digits {
 		if i == 2 || i == 4 {
-			result += "."
+			b.WriteByte('.')
 		}
-		result += string(c)
+		b.WriteRune(c)
 	}
-	return result
+	return b.String()
 }
 
 // formatTime inserts a colon into a raw digit string: HHMM -> HH:MM
 func formatTime(digits string) string {
-	var result string
+	var b strings.Builder
+	b.Grow(len(digits) + 1)
 	for i, c := range digits {
 		if i == 2 {
-			result += ":"
+			b.WriteByte(':')
 		}
-		result += string(c)
+		b.WriteRune(c)
 	}
-	return result
+	return b.String()
 }
 
 // validateDateDigits checks that partial date digits are valid so far.
