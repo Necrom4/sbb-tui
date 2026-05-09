@@ -1,3 +1,11 @@
+## [1.14.1](https://github.com/Necrom4/sbb-tui/compare/v1.14.0...v1.14.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* **ui.animation:** adapt animation colors to the terminal background ([2206f36](https://github.com/Necrom4/sbb-tui/commit/2206f36b552babb35b20fab8b52b057638d990f0))
+* **ui.animation:** gate build cells with spaces while still fading from the bg ([dd10bad](https://github.com/Necrom4/sbb-tui/commit/dd10badae42cbf60d4f76e166542f727c80754cf))
+
 # [1.14.0](https://github.com/Necrom4/sbb-tui/compare/v1.13.4...v1.14.0) (2026-05-09)
 
 
