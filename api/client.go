@@ -1,4 +1,4 @@
-// Package api provides HTTP client functions for the Swiss public transport API.
+// Package api wraps the transport.opendata.ch HTTP endpoints.
 package api
 
 import (
@@ -21,7 +21,7 @@ type connectionsResponse struct {
 	Connections []model.Connection `json:"connections"`
 }
 
-// FetchLocations returns station name suggestions matching the given query.
+// FetchLocations returns station name suggestions matching query.
 func FetchLocations(query string) ([]string, error) {
 	apiURL := "https://transport.opendata.ch/v1/locations?type=station&query=" + url.QueryEscape(query)
 
@@ -49,17 +49,15 @@ func FetchLocations(query string) ([]string, error) {
 	return names, nil
 }
 
-// FetchConnections queries the transport API for connections between two stations.
+// FetchConnections returns up to `limit` connections between two stations.
 func FetchConnections(from, to, date, timeStr string, isArrivalTime bool, limit int) ([]model.Connection, error) {
 	parts := []string{
 		fmt.Sprintf("from=%s", url.QueryEscape(from)),
 		fmt.Sprintf("to=%s", url.QueryEscape(to)),
 	}
-
 	if date != "" {
 		parts = append(parts, fmt.Sprintf("date=%s", url.QueryEscape(date)))
 	}
-
 	if timeStr != "" {
 		parts = append(parts, fmt.Sprintf("time=%s", url.QueryEscape(timeStr)))
 	}
@@ -68,8 +66,8 @@ func FetchConnections(from, to, date, timeStr string, isArrivalTime bool, limit 
 	if isArrivalTime {
 		isArrival = "1"
 	}
-
-	parts = append(parts,
+	parts = append(
+		parts,
 		fmt.Sprintf("isArrivalTime=%s", isArrival),
 		fmt.Sprintf("limit=%v", limit),
 	)

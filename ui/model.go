@@ -14,11 +14,14 @@ import (
 	"github.com/necrom4/sbb-tui/util"
 )
 
+// kind values distinguish header items that wrap a text input from
+// those that act as buttons.
 const (
 	kindInput int = iota
 	kindButton
 )
 
+// focusable is one entry in the header's tab order.
 type focusable struct {
 	kind  int
 	id    string
@@ -33,11 +36,13 @@ var (
 	errConnectionMalformed = errors.New("connection details unavailable")
 )
 
+// dataMsg carries the result of a connections fetch.
 type dataMsg struct {
 	connections []model.Connection
 	err         error
 }
 
+// suggestionsMsg carries autocompletion suggestions for one of the input fields.
 type suggestionsMsg struct {
 	inputIndex int
 	names      []string
@@ -46,15 +51,18 @@ type suggestionsMsg struct {
 
 const suggestDebounce = 300 * time.Millisecond
 
+// suggestTickMsg fires after the debounce window so we know whether to fetch.
 type suggestTickMsg struct {
 	inputIndex int
 	seq        int
 }
 
+// versionCheckMsg carries the result of the GitHub release lookup.
 type versionCheckMsg struct {
 	newerVersion string
 }
 
+// appModel is the Bubbletea model that backs the whole TUI.
 type appModel struct {
 	width          int
 	height         int
@@ -80,7 +88,7 @@ type appModel struct {
 	anim           animator
 }
 
-// NewModel creates the initial Bubbletea model from the application config.
+// NewModel builds the initial Bubbletea model from the resolved Config.
 func NewModel(cfg config.Config) appModel {
 	m := appModel{
 		headerOrder: []focusable{
@@ -104,6 +112,8 @@ func NewModel(cfg config.Config) appModel {
 
 	now := time.Now()
 
+	// Set up the four text inputs (from, to, date, time) with their
+	// per-field constraints and pre-fill values.
 	for i := range m.inputs {
 		t := textinput.New()
 		t.CharLimit = 32
@@ -158,14 +168,12 @@ func NewModel(cfg config.Config) appModel {
 func (m appModel) Init() tea.Cmd {
 	cmds := []tea.Cmd{textinput.Blink, checkVersionCmd(m.currentVersion)}
 	if m.animations {
-		// The logo build runs first; the tagline build starts when
-		// it finishes, and the shines kick in when the tagline build
-		// finishes (see animationTickMsg handler in update.go).
 		cmds = append(cmds, m.anim.Start(animLogoBuild, logoBuildDuration))
 	}
 	return tea.Batch(cmds...)
 }
 
+// checkVersionCmd asynchronously asks the GitHub API for the latest tag.
 func checkVersionCmd(current string) tea.Cmd {
 	return func() tea.Msg {
 		newer, _ := util.NewerVersion(current)
@@ -173,7 +181,7 @@ func checkVersionCmd(current string) tea.Cmd {
 	}
 }
 
-// userError formats an error for display in the TUI.
+// userError formats err for display, falling back to a generic prefix on unknown errors.
 func userError(err error) string {
 	if errors.Is(err, errNoConnections) ||
 		errors.Is(err, errMissingDeparture) ||
@@ -184,7 +192,7 @@ func userError(err error) string {
 	return fmt.Sprintf("Something went wrong: %v", err)
 }
 
-// capitalise uppercases the first rune.
+// capitalise uppercases the first rune of s.
 func capitalise(s string) string {
 	if s == "" {
 		return s
