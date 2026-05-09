@@ -149,26 +149,18 @@ type fadeOpts struct {
 }
 
 // renderFade paints `text` with each non-space rune fading in over
-// its own window. When the terminal background is known the gradient
-// runs from that background colour to `base`, producing a true
-// invisible-to-base fade. Otherwise cells stay as spaces until their
-// window opens and only then start fading from a dark anchor, so we
-// never flash a stale colour against a mismatched background.
+// its own window. Cells stay as literal spaces until their reveal
+// window opens, then fade from the detected terminal background
+// (falling back to black when unknown) to `base`. The space gate
+// keeps transparent terminals fully pass-through during the build,
+// while the bg-anchored gradient gives a smooth blend on opaque
+// ones.
 func (m appModel) renderFade(text string, base colorful.Color, opts fadeOpts) string {
+	from := colorBlack
 	if m.styles.backgroundKnown {
-		pal := newPalette(m.styles.background, base)
-		return renderGrid(text, pal, func(row, col int) float64 {
-			return windowedFade(opts.progress, opts.norm(row, col), opts.window, opts.shift)
-		})
+		from = m.styles.background
 	}
-	return renderFadeFallback(text, base, opts)
-}
-
-// renderFadeFallback runs the fade when the terminal background is
-// not known: cells are spaces before their window opens, then fade
-// from a dark anchor to `base` over the window.
-func renderFadeFallback(text string, base colorful.Color, opts fadeOpts) string {
-	pal := newPalette(colorBlack, base)
+	pal := newPalette(from, base)
 	lines, maxWidth := textBounds(text)
 
 	var b strings.Builder

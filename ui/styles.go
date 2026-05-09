@@ -111,6 +111,16 @@ func newStyles(theme config.Theme) styles {
 	}
 }
 
+// detectBackground returns the terminal's background color and
+// whether the OSC 11 query produced a usable value.
+func detectBackground() (colorful.Color, bool) {
+	raw := termenv.BackgroundColor()
+	if _, isNo := raw.(termenv.NoColor); isNo {
+		return colorful.Color{}, false
+	}
+	return termenv.ConvertToRGB(raw), true
+}
+
 // themeColor accepts a theme value (hex like "#RRGGBB" or the
 // adaptive sentinels "white"/"black") and returns a lipgloss color
 // that resolves correctly on both light and dark terminals.
@@ -166,16 +176,4 @@ func parseColor(s string) colorful.Color {
 func mustHex(s string) colorful.Color {
 	c, _ := colorful.Hex(s)
 	return c
-}
-
-// detectBackground returns the terminal's background color and
-// whether the OSC 11 query produced a usable value. When unknown,
-// callers should fall back to a heuristic based on
-// termenv.HasDarkBackground().
-func detectBackground() (colorful.Color, bool) {
-	raw := termenv.BackgroundColor()
-	if _, isNo := raw.(termenv.NoColor); isNo {
-		return colorful.Color{}, false
-	}
-	return termenv.ConvertToRGB(raw), true
 }
