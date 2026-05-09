@@ -115,13 +115,13 @@ Usage:
   sbb-tui [flags]
 
 Flags:
-      --animations    Play UI animations (`=false` to disable)
-      --arrival       Use arrival time instead of departure time
-      --date string   Pre-fill date (DD.MM.YYYY)
       --from string   Pre-fill departure station
-      --nerdfont      Use Nerd Font icons (`=false` fallback to Unicode)
-      --time string   Pre-fill time (HH:MM)
       --to string     Pre-fill arrival station
+      --date string   Pre-fill date [DD.MM.YYYY]
+      --time string   Pre-fill time [HH:MM]
+      --arrival       Set date/time as arrival instead of departure time
+      --animations    Play UI animations (default true)
+      --nerdfont      Use Nerd Font icons (default true)
   -v, --version       Print version and exit
 ```
 
