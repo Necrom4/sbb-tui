@@ -10,11 +10,11 @@ import (
 	"github.com/necrom4/sbb-tui/model"
 )
 
-// buildDetailLines builds the raw content lines for a connection's detail view.
+// buildDetailLines returns the raw text lines that make up a connection's detail view.
 func (m appModel) buildDetailLines(c model.Connection, innerWidth int) []string {
 	var lines []string
 
-	// Pre-compute widest label and value widths so platform values align.
+	// Pre-compute label/value widths so platform columns line up across sections.
 	labelCol := 0
 	valueCol := 0
 	for _, section := range c.Sections {
@@ -33,7 +33,6 @@ func (m appModel) buildDetailLines(c model.Connection, innerWidth int) []string 
 			}
 		}
 	}
-	// platformCol is the total visible width: padded label + space + widest value
 	platformCol := 0
 	if labelCol > 0 {
 		platformCol = labelCol + 1 + valueCol
@@ -49,6 +48,7 @@ func (m appModel) buildDetailLines(c model.Connection, innerWidth int) []string 
 			lines = append(lines, m.renderJourneySection(section, innerWidth, labelCol, platformCol, isFirst, isLast)...)
 		}
 
+		// Insert blank rows between sections so neighbouring legs don't visually collide.
 		if !isLast {
 			nextIsWalk := c.Sections[i+1].Walk != nil
 			currentIsWalk := section.Walk != nil
@@ -73,8 +73,7 @@ func (m appModel) buildDetailLines(c model.Connection, innerWidth int) []string 
 	return lines
 }
 
-// maxDetailScroll returns the maximum useful scroll offset for the current
-// connection's detail view. Returns 0 when there's nothing to scroll.
+// maxDetailScroll returns the highest scroll offset that still shows new content; 0 means no scrolling needed.
 func (m appModel) maxDetailScroll() int {
 	if len(m.connections) == 0 || m.resultIndex >= len(m.connections) {
 		return 0
@@ -97,6 +96,7 @@ func (m appModel) maxDetailScroll() int {
 	return len(visLines) - boxHeight
 }
 
+// renderFullConnection renders the scrollable detail box for a single connection.
 func (m appModel) renderFullConnection(c model.Connection, width int) string {
 	innerWidth := max(width-borderSize-(detailPaddingH*2), 0)
 	lines := m.buildDetailLines(c, innerWidth)
@@ -104,12 +104,11 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 	detailFrame := m.styles.detailedResult.GetVerticalFrameSize()
 	boxHeight := max(m.resultsHeight()-detailFrame, 0)
 
-	// Wrap and split into visual lines for scrolling.
+	// Wrap the content into terminal-width lines so we can scroll by visible row count.
 	content := strings.Join(lines, "\n")
 	wrapped := m.styles.text.Width(innerWidth).Render(content)
 	visLines := strings.Split(wrapped, "\n")
 
-	// Scroll and clamp to the visible area.
 	if len(visLines) > boxHeight {
 		scrollY := min(m.detailScrollY, len(visLines)-boxHeight)
 		visLines = visLines[scrollY : scrollY+boxHeight]
@@ -118,6 +117,7 @@ func (m appModel) renderFullConnection(c model.Connection, width int) string {
 	return m.styles.detailedResult.Width(width).Height(boxHeight).Render(strings.Join(visLines, "\n"))
 }
 
+// renderJourneySection renders a single transit leg (departure → vehicle → destination → arrival).
 func (m appModel) renderJourneySection(section model.Section, width, labelCol, platformCol int, isFirst, isLast bool) []string {
 	var lines []string
 
@@ -179,6 +179,7 @@ func (m appModel) renderJourneySection(section model.Section, width, labelCol, p
 	return lines
 }
 
+// googleMapsURL returns a Google Maps walking-directions URL between a section's two stations.
 func googleMapsURL(s model.Section) string {
 	dep := s.Departure.Station.Coordinate
 	arr := s.Arrival.Station.Coordinate
@@ -186,11 +187,12 @@ func googleMapsURL(s model.Section) string {
 		dep.X, dep.Y, arr.X, arr.Y)
 }
 
-// renderLink generates an OSC 8 terminal hyperlink.
+// renderLink wraps text in an OSC 8 terminal hyperlink.
 func renderLink(text, url string) string {
 	return fmt.Sprintf("\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", url, text)
 }
 
+// renderWalkSection renders a walking transfer between two stations as a clickable duration.
 func (m appModel) renderWalkSection(section model.Section) []string {
 	var lines []string
 
@@ -218,6 +220,8 @@ func (m appModel) renderWalkSection(section model.Section) []string {
 	return lines
 }
 
+// formatStationLine formats one row of "time  symbol  station  …  platform"
+// in the detail view, padded to align across all sections.
 func (m appModel) formatStationLine(timeStr, symbol, station, platform string, width, timeCol, symbolCol, labelCol, platformCol int, bold bool) string {
 	textStyle := m.styles.text
 	if bold {
@@ -225,7 +229,6 @@ func (m appModel) formatStationLine(timeStr, symbol, station, platform string, w
 	}
 
 	timePart := textStyle.Render(timeStr)
-
 	symbolPart := fmt.Sprintf("  %s  ", textStyle.Render(symbol))
 
 	platformPart := ""
@@ -256,6 +259,7 @@ func (m appModel) formatStationLine(timeStr, symbol, station, platform string, w
 	return fmt.Sprintf("%s%s%s", timePart, symbolPart, stationPart)
 }
 
+// truncateString shortens s to at most maxLen runes, ending with "..." when it had to clip.
 func truncateString(s string, maxLen int) string {
 	if maxLen <= 0 {
 		return ""
@@ -269,6 +273,7 @@ func truncateString(s string, maxLen int) string {
 	return s[:maxLen-3] + "..."
 }
 
+// renderSimpleConnection renders one row of the result list with vehicle badge, timeline and platform.
 func (m appModel) renderSimpleConnection(c model.Connection, index int, width int) string {
 	firstVehicle := -1
 	lastVehicle := -1
@@ -322,6 +327,7 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 		arrGap = " "
 	}
 
+	// Size the stops timeline to fill whatever horizontal space is left after the fixed parts.
 	timelineFixedWidth := lipgloss.Width(timelinePrefix) +
 		lipgloss.Width(departure) +
 		lipgloss.Width(departureDelay) + len(depGap) +
@@ -351,7 +357,8 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 
 	bottomLinePadding := max(lineContentWidth-lipgloss.Width(platformInfo)-lipgloss.Width(duration), 1)
 
-	content := fmt.Sprintf("\n  %s %s %s  %s\n\n  %s%s%s%s%s  %s%s\n\n  %s%s%v\n",
+	content := fmt.Sprintf(
+		"\n  %s %s %s  %s\n\n  %s%s%s%s%s  %s%s\n\n  %s%s%v\n",
 		vehicleIcon,
 		vehicleModel,
 		company,
@@ -371,8 +378,7 @@ func (m appModel) renderSimpleConnection(c model.Connection, index int, width in
 	return style.Render(content)
 }
 
-// formatDuration converts the API duration format (e.g. "00d01:15:00") to a
-// human-readable string like "1 h 15 min" or "15 min".
+// formatDuration converts the API "00d01:15:00" duration string to "1 h 15 min" or "15 min".
 func formatDuration(duration string) string {
 	parts := strings.Split(duration, ":")
 	if len(parts) < 2 {
@@ -387,6 +393,7 @@ func formatDuration(duration string) string {
 	return minutes + " min"
 }
 
+// formatDelay returns the styled "+N'" suffix when delay is positive, or an empty string.
 func (m appModel) formatDelay(delay int) string {
 	if delay > 0 {
 		return m.styles.warningBold.Render(fmt.Sprintf(" +%d'", delay))
@@ -394,6 +401,8 @@ func (m appModel) formatDelay(delay int) string {
 	return ""
 }
 
+// renderStopsLine draws the dotted "●─○─●" timeline between two stations,
+// proportional to each section's duration when available.
 func (m appModel) renderStopsLine(c model.Connection, totalWidth int) string {
 	if len(c.Sections) == 0 {
 		return m.icons.filledDot + m.icons.horizLine + m.icons.horizLine + m.icons.filledDot
@@ -402,7 +411,6 @@ func (m appModel) renderStopsLine(c model.Connection, totalWidth int) string {
 	var sectionDurations []time.Duration
 	var totalSectionDuration time.Duration
 	for _, s := range c.Sections {
-		// Skip walking sections
 		if s.Journey == nil {
 			continue
 		}
@@ -415,8 +423,8 @@ func (m appModel) renderStopsLine(c model.Connection, totalWidth int) string {
 		}
 	}
 
+	// Without per-section durations, distribute hops evenly.
 	if totalSectionDuration == 0 || len(sectionDurations) == 0 {
-		// Fallback to equal distribution
 		return m.icons.filledDot + strings.Repeat(m.icons.horizLine+m.icons.horizLine+m.icons.hollowDot, c.Transfers) + m.icons.horizLine + m.icons.horizLine + m.icons.filledDot
 	}
 
@@ -427,7 +435,7 @@ func (m appModel) renderStopsLine(c model.Connection, totalWidth int) string {
 	for i, secDur := range sectionDurations {
 		var lineChars int
 		if i == len(sectionDurations)-1 {
-			// Last section gets remaining chars to avoid rounding errors
+			// Give the last section whatever rounding remainder is left so the line ends flush.
 			lineChars = totalWidth - usedChars
 		} else {
 			proportion := float64(secDur) / float64(totalSectionDuration)

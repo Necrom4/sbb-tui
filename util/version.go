@@ -1,4 +1,4 @@
-// Package util provides generic helpers
+// Package util holds cross-cutting helpers, currently a GitHub release lookup.
 package util
 
 import (
@@ -16,6 +16,7 @@ type releaseResponse struct {
 
 var latestReleaseURL = "https://api.github.com/repos/Necrom4/sbb-tui/releases/latest"
 
+// latestVersion fetches the most recent release tag from the GitHub API.
 func latestVersion() (string, error) {
 	req, err := http.NewRequest(http.MethodGet, latestReleaseURL, nil)
 	if err != nil {
@@ -44,7 +45,7 @@ func latestVersion() (string, error) {
 	return release.TagName, nil
 }
 
-// NewerVersion returns the latest release tag if it is newer than current.
+// NewerVersion returns the latest release tag when it is strictly newer than current.
 func NewerVersion(current string) (string, error) {
 	if current == "dev" {
 		return "", nil
@@ -58,16 +59,12 @@ func NewerVersion(current string) (string, error) {
 	if !semver.IsValid(latest) {
 		return "", fmt.Errorf("checking for newer version: latest tag is not valid semver: %s", latest)
 	}
-
 	if !semver.IsValid(current) {
 		return "", fmt.Errorf("checking for newer version: current version is not valid semver: %s", current)
 	}
 
-	cmp := semver.Compare(current, latest)
-
-	if cmp < 0 {
+	if semver.Compare(current, latest) < 0 {
 		return latest, nil
 	}
-
 	return "", nil
 }

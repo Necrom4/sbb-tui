@@ -14,9 +14,9 @@ const (
 	taglineBuildFadeWindow = 0.20
 )
 
-// renderTaglineBuild types `text` left-to-right, with each rune
-// fading in over a short window. Character 0 starts mid-fade so the
-// reveal feels continuous with whatever animation preceded it.
+// renderTaglineBuild types text left-to-right, fading each rune in.
+// The reveal window is shifted so character 0 starts mid-fade and the
+// animation feels continuous with the logo build that precedes it.
 func (m appModel) renderTaglineBuild(text string, base colorful.Color, progress float64) string {
 	n := utf8.RuneCountInString(text)
 	if n == 0 {

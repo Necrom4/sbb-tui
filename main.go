@@ -1,10 +1,11 @@
+// Command sbb-tui launches the SBB/CFF/FFS timetable terminal app.
 package main
 
 import (
 	"fmt"
 	"os"
 	"time"
-	_ "time/tzdata" // embed timezone database so Europe/Zurich always resolves
+	_ "time/tzdata" // embed tzdata so Europe/Zurich always resolves
 
 	tea "github.com/charmbracelet/bubbletea"
 	flag "github.com/spf13/pflag"
@@ -13,7 +14,7 @@ import (
 	"github.com/necrom4/sbb-tui/ui"
 )
 
-// version is set at build time via ldflags.
+// version is set at build time via -ldflags.
 var version = "dev"
 
 func main() {
@@ -26,7 +27,6 @@ func main() {
 	flag.Bool("nerdfont", true, "Use Nerd Font icons")
 	showVersion := flag.BoolP("version", "v", false, "Print version and exit")
 
-	// --help
 	flag.Usage = func() {
 		fmt.Println("sbb-tui - Swiss SBB/CFF/FFS timetable app for the terminal")
 		fmt.Println()
@@ -50,7 +50,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	// CLI flags override config file values.
+	// CLI flag values override config file values.
 	cfg.From = *from
 	cfg.To = *to
 	if *date != "" {
@@ -74,7 +74,6 @@ func main() {
 		a, _ := flag.CommandLine.GetBool("animations")
 		cfg.Animations = a
 	}
-
 	if flag.CommandLine.Changed("nerdfont") {
 		nf, _ := flag.CommandLine.GetBool("nerdfont")
 		cfg.NerdFont = nf

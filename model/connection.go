@@ -1,4 +1,4 @@
-// Package model defines data types for the Swiss public transport API responses.
+// Package model defines the data types decoded from the transport API.
 package model
 
 import (
@@ -6,10 +6,10 @@ import (
 	"time"
 )
 
-// SwissLocation is the time zone for Switzerland (CET/CEST, Europe/Zurich).
-// main.go imports _ "time/tzdata" so the embedded TZ database is always
-// available; the fixed-offset fallback is a last-resort safety net only and
-// does not handle the CET↔CEST daylight-saving transition.
+// SwissLocation is the Europe/Zurich time zone, with a fixed-offset
+// fallback when the tzdata lookup fails. The fallback does not handle
+// the CET-CEST transition; main.go embeds time/tzdata to keep that
+// path off the hot road.
 var SwissLocation = func() *time.Location {
 	loc, err := time.LoadLocation("Europe/Zurich")
 	if err != nil {
@@ -18,8 +18,7 @@ var SwissLocation = func() *time.Location {
 	return loc
 }()
 
-// Timestamp wraps time.Time with custom JSON unmarshaling for the SBB API
-// date format (2006-01-02T15:04:05-0700).
+// Timestamp is a time.Time decoded from the API's RFC3339-ish format.
 type Timestamp struct {
 	time.Time
 }
@@ -29,13 +28,12 @@ func (t Timestamp) Sub(other Timestamp) time.Duration {
 	return t.Time.Sub(other.Time)
 }
 
-// Local overrides time.Time.Local() to return the timestamp in Swiss time
-// (CET/CEST, Europe/Zurich) instead of the system's local timezone.
+// Local returns the timestamp in Swiss time, overriding time.Time.Local.
 func (t Timestamp) Local() time.Time {
 	return t.In(SwissLocation)
 }
 
-// UnmarshalJSON parses the SBB API date format into a Timestamp.
+// UnmarshalJSON parses the API's "2006-01-02T15:04:05-0700" format.
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	s := strings.Trim(string(b), "\"")
 	if s == "null" || s == "" {
@@ -49,19 +47,19 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Coordinate represents a geographic position.
+// Coordinate is a geographic point.
 type Coordinate struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
 
-// Station represents a transport stop or station.
+// Station is a transport stop with a name and coordinates.
 type Station struct {
 	Name       string     `json:"name"`
 	Coordinate Coordinate `json:"coordinate"`
 }
 
-// Departure holds departure information for a connection section.
+// Departure describes when and where a section leaves.
 type Departure struct {
 	Station   Station   `json:"station"`
 	Scheduled Timestamp `json:"departure"`
@@ -69,7 +67,7 @@ type Departure struct {
 	Delay     int       `json:"delay"`
 }
 
-// Arrival holds arrival information for a connection section.
+// Arrival describes when and where a section reaches its end.
 type Arrival struct {
 	Station   Station   `json:"station"`
 	Scheduled Timestamp `json:"arrival"`
@@ -77,7 +75,7 @@ type Arrival struct {
 	Delay     int       `json:"delay"`
 }
 
-// Section represents a leg of a connection (either a journey or a walk).
+// Section is a single leg of a connection: a vehicle journey or a walk.
 type Section struct {
 	Journey *struct {
 		Category string `json:"category"`
@@ -94,7 +92,7 @@ type Section struct {
 	Arrival   Arrival   `json:"arrival"`
 }
 
-// Connection represents a complete route between two stations.
+// Connection is the full route returned by the API for one query result.
 type Connection struct {
 	From struct {
 		Station   Station   `json:"station"`

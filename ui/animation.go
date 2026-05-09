@@ -19,7 +19,7 @@ type animation struct {
 	done     bool
 }
 
-// animator manages a set of named time-bounded animations driven by a single shared ticker.
+// animator runs a set of named time-bounded animations off a single shared ticker.
 type animator struct {
 	anims map[string]*animation
 }
@@ -28,7 +28,7 @@ func newAnimator() animator {
 	return animator{anims: map[string]*animation{}}
 }
 
-// Start (re)starts a named animation and returns a Cmd to schedule the next frame.
+// Start (re)starts a named animation and returns the Cmd that schedules the next frame.
 func (a *animator) Start(name string, duration time.Duration) tea.Cmd {
 	if a.anims == nil {
 		a.anims = map[string]*animation{}
@@ -42,20 +42,20 @@ func (a *animator) StartIndefinite(name string) tea.Cmd {
 	return a.Start(name, math.MaxInt64)
 }
 
-// Stop marks a named animation as finished without firing a completion event.
+// Stop marks the named animation as finished without firing a completion event.
 func (a *animator) Stop(name string) {
 	if an, ok := a.anims[name]; ok {
 		an.done = true
 	}
 }
 
-// Registered reports whether a named animation has ever been started.
+// Registered reports whether the animation has ever been started.
 func (a animator) Registered(name string) bool {
 	_, ok := a.anims[name]
 	return ok
 }
 
-// Elapsed returns the time since a named animation started and whether it is currently running.
+// Elapsed returns how long the named animation has been running, and whether it still is.
 func (a animator) Elapsed(name string) (time.Duration, bool) {
 	an, ok := a.anims[name]
 	if !ok || an.done {
@@ -64,8 +64,8 @@ func (a animator) Elapsed(name string) (time.Duration, bool) {
 	return time.Since(an.start), true
 }
 
-// Tick advances all animations and returns the names that just finished plus a Cmd
-// for the next frame (nil when no animation is still running).
+// Tick advances every animation and returns the names that just finished
+// plus the Cmd for the next frame (nil once nothing is running).
 func (a *animator) Tick() (finished []string, next tea.Cmd) {
 	anyRunning := false
 	now := time.Now()
@@ -86,7 +86,7 @@ func (a *animator) Tick() (finished []string, next tea.Cmd) {
 	return finished, next
 }
 
-// Progress returns the [0,1] progress of a named animation and whether it is currently active.
+// Progress returns the [0,1] progress of the named animation and whether it is still active.
 func (a animator) Progress(name string) (float64, bool) {
 	an, ok := a.anims[name]
 	if !ok || an.done {

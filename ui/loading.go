@@ -13,6 +13,7 @@ const (
 
 var loadingFrames = []rune{'⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'}
 
+// startLoadingCmd starts the spinner animation; returns nil when animations are disabled.
 func (m *appModel) startLoadingCmd() tea.Cmd {
 	if !m.animations {
 		return nil
@@ -20,6 +21,7 @@ func (m *appModel) startLoadingCmd() tea.Cmd {
 	return m.anim.StartIndefinite(animLoading)
 }
 
+// renderLoading returns the "Searching connections" line with a spinner glyph.
 func (m appModel) renderLoading() string {
 	if !m.animations {
 		return "\n  Searching connections..."

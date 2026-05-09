@@ -89,6 +89,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.tabIndex = len(m.headerOrder) - 1
 			}
 
+			// Move focus to the newly active input and blur every other one.
 			var cmds []tea.Cmd
 			for _, item := range m.headerOrder {
 				if item.kind == kindInput {
@@ -101,16 +102,15 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Batch(cmds...)
 
-		// Disable autocompletion if cursor is not at the end of the stirng.
 		case "right":
+			// Suppress autocomplete acceptance when the cursor is mid-string;
+			// the user just wants to move right.
 			active := m.headerOrder[m.tabIndex]
-
 			if active.kind == kindInput {
 				input := m.inputs[active.index]
-
 				if input.Position() < len([]rune(input.Value())) {
 					original := input.KeyMap.AcceptSuggestion
-					input.KeyMap.AcceptSuggestion = key.NewBinding() // empty binding
+					input.KeyMap.AcceptSuggestion = key.NewBinding()
 
 					var cmd tea.Cmd
 					m.inputs[active.index], cmd = input.Update(msg)
@@ -141,7 +141,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case suggestTickMsg:
-		// Fetch if no new keystroke has occurred since
+		// Only fetch when no newer keystroke has invalidated this tick.
 		if msg.seq == m.suggestSeq[msg.inputIndex] {
 			query := m.inputs[msg.inputIndex].Value()
 			return m, fetchSuggestionsCmd(msg.inputIndex, query)
@@ -193,24 +193,26 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+// updateInputs forwards keypresses to the text inputs and triggers the
+// debounced suggestion fetches and ghost-completion updates.
 func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 	cmds := make([]tea.Cmd, len(m.inputs))
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		// Check key input in input fields
+		// Date and time inputs handle their own digit-only logic so the
+		// dot/colon delimiters stay locked in place no matter where the
+		// user moves the cursor.
 		switch m.headerOrder[m.tabIndex].id {
 		case "date":
 			t := &m.inputs[2]
 			s := msg.String()
 			val := t.Value()
 
-			// strip delimiters to get raw digits
 			digits := stripDelimiters(val, '.')
 
 			if msg.Type == tea.KeyBackspace {
 				pos := t.Position()
-				// figure out which digit the cursor is on
 				digitPos := countDigitsBefore(val, pos)
 				if digitPos > 0 && digitPos <= len(digits) {
 					digits = digits[:digitPos-1] + digits[digitPos:]
@@ -226,12 +228,10 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 				if len(digits) >= 8 {
 					return nil
 				}
-				// insert digit at cursor position
 				pos := t.Position()
 				digitPos := countDigitsBefore(val, pos)
 				newDigits := digits[:digitPos] + s + digits[digitPos:]
 
-				// validate the new digit string
 				if !validateDateDigits(newDigits) {
 					return nil
 				}
@@ -249,7 +249,6 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 			s := msg.String()
 			val := t.Value()
 
-			// strip delimiters to get raw digits
 			digits := stripDelimiters(val, ':')
 
 			if msg.Type == tea.KeyBackspace {
@@ -291,7 +290,7 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
 	}
 
-	// Debounce suggestion fetches for from/to inputs when value changes
+	// Schedule a debounced suggestion fetch when the From/To values change.
 	if fromVal := m.inputs[0].Value(); fromVal != m.lastFromQuery {
 		m.lastFromQuery = fromVal
 		if len(fromVal) >= 2 {
@@ -317,13 +316,14 @@ func (m *appModel) updateInputs(msg tea.Msg) tea.Cmd {
 		}
 	}
 
-	// Update date/time inputs' ghost completion
+	// Refresh the ghost-completion offered by the date/time inputs.
 	m.inputs[2].SetSuggestions([]string{completeDate(m.inputs[2].Value())})
 	m.inputs[3].SetSuggestions([]string{completeTime(m.inputs[3].Value())})
 
 	return tea.Batch(cmds...)
 }
 
+// validateInputs returns an error when the From or To station is blank.
 func (m appModel) validateInputs() error {
 	if m.inputs[0].Value() == "" {
 		return errMissingDeparture
@@ -334,6 +334,7 @@ func (m appModel) validateInputs() error {
 	return nil
 }
 
+// fetchSuggestionsCmd asynchronously asks the API for station suggestions.
 func fetchSuggestionsCmd(inputIndex int, query string) tea.Cmd {
 	return func() tea.Msg {
 		names, err := api.FetchLocations(query)
@@ -341,6 +342,7 @@ func fetchSuggestionsCmd(inputIndex int, query string) tea.Cmd {
 	}
 }
 
+// completeDate returns partial padded out to today's date in DD.MM.YYYY form.
 func completeDate(partial string) string {
 	now := time.Now().In(model.SwissLocation)
 	full := now.Format("02.01.2006")
@@ -350,6 +352,7 @@ func completeDate(partial string) string {
 	return partial
 }
 
+// completeTime returns partial padded out to "00:00" form.
 func completeTime(partial string) string {
 	if len(partial) < 5 {
 		full := partial + "00:00"[len(partial):]
@@ -358,7 +361,7 @@ func completeTime(partial string) string {
 	return partial
 }
 
-// stripDelimiters removes all occurrences of delim from s.
+// stripDelimiters removes every occurrence of delim from s.
 func stripDelimiters(s string, delim byte) string {
 	result := make([]byte, 0, len(s))
 	for i := 0; i < len(s); i++ {
@@ -369,7 +372,7 @@ func stripDelimiters(s string, delim byte) string {
 	return string(result)
 }
 
-// countDigitsBefore returns how many non-delimiter characters appear before position pos.
+// countDigitsBefore returns the number of non-delimiter bytes before pos in s.
 func countDigitsBefore(s string, pos int) int {
 	count := 0
 	for i := 0; i < pos && i < len(s); i++ {
@@ -380,8 +383,8 @@ func countDigitsBefore(s string, pos int) int {
 	return count
 }
 
-// posOfDigit returns the string position of the nth digit (0-indexed) in s,
-// or len(s) if n is past the end.
+// posOfDigit returns the byte index of the n-th digit (0-indexed) in s,
+// or len(s) when n exceeds the digit count.
 func posOfDigit(s string, n int) int {
 	count := 0
 	for i := 0; i < len(s); i++ {
@@ -395,7 +398,7 @@ func posOfDigit(s string, n int) int {
 	return len(s)
 }
 
-// formatDate inserts dots into a raw digit string: DDMMYYYY -> DD.MM.YYYY
+// formatDate inserts dots into a digit string: DDMMYYYY -> DD.MM.YYYY.
 func formatDate(digits string) string {
 	var b strings.Builder
 	b.Grow(len(digits) + 2)
@@ -408,7 +411,7 @@ func formatDate(digits string) string {
 	return b.String()
 }
 
-// formatTime inserts a colon into a raw digit string: HHMM -> HH:MM
+// formatTime inserts a colon into a digit string: HHMM -> HH:MM.
 func formatTime(digits string) string {
 	var b strings.Builder
 	b.Grow(len(digits) + 1)
@@ -421,7 +424,7 @@ func formatTime(digits string) string {
 	return b.String()
 }
 
-// validateDateDigits checks that partial date digits are valid so far.
+// validateDateDigits rejects partial date digits that can never form a valid date.
 func validateDateDigits(d string) bool {
 	if len(d) >= 1 && d[0] > '3' {
 		return false
@@ -451,7 +454,7 @@ func validateDateDigits(d string) bool {
 	return true
 }
 
-// validateTimeDigits checks that partial time digits are valid so far.
+// validateTimeDigits rejects partial time digits that can never form a valid time.
 func validateTimeDigits(d string) bool {
 	if len(d) >= 1 && d[0] > '2' {
 		return false
@@ -465,7 +468,7 @@ func validateTimeDigits(d string) bool {
 	return true
 }
 
-// toAPIDate converts Swiss date format (DD.MM.YYYY) to API format (YYYY-MM-DD).
+// toAPIDate converts the Swiss DD.MM.YYYY format to the API's YYYY-MM-DD.
 func toAPIDate(swiss string) string {
 	parts := strings.Split(swiss, ".")
 	if len(parts) != 3 {
@@ -474,6 +477,7 @@ func toAPIDate(swiss string) string {
 	return parts[2] + "-" + parts[1] + "-" + parts[0]
 }
 
+// searchCmd asynchronously runs the connections search with the current input values.
 func (m appModel) searchCmd() tea.Cmd {
 	return func() tea.Msg {
 		res, err := api.FetchConnections(
@@ -488,9 +492,9 @@ func (m appModel) searchCmd() tea.Cmd {
 	}
 }
 
-// adaptSuggestions grafts the user's input onto the front of each suggestion
-// so that it satisfies the textinput widget's HasPrefix matching.
-// (e.g. "zur" (input) + "Zürich HB" (suggestion) = "zurich HB")
+// adaptSuggestions grafts the user's literal input onto the front of each
+// suggestion so the textinput widget's HasPrefix matching accepts them.
+// (e.g. "zur" + "Zürich HB" -> "zurich HB")
 func adaptSuggestions(userInput string, suggestions []string) []string {
 	if userInput == "" {
 		return suggestions
@@ -506,8 +510,8 @@ func adaptSuggestions(userInput string, suggestions []string) []string {
 	return out
 }
 
-// prefixMatchLen returns the offset into `suggestion`
-// that has been fuzzy matched against `input`.
+// prefixMatchLen returns the byte offset into suggestion that is matched by
+// input under fuzzy rules (diacritic folding + skipping non-alphanumerics).
 func prefixMatchLen(suggestion, input string) int {
 	si, ii := 0, 0
 	for si < len(suggestion) && ii < len(input) {
@@ -520,6 +524,7 @@ func prefixMatchLen(suggestion, input string) int {
 			continue
 		}
 
+		// Skip punctuation/spaces in the suggestion without consuming input.
 		if !unicode.IsLetter(sr) && !unicode.IsDigit(sr) {
 			si += sw
 			continue
@@ -531,19 +536,18 @@ func prefixMatchLen(suggestion, input string) int {
 			continue
 		}
 
-		// No match
 		return 0
 	}
 
 	if ii < len(input) {
-		return 0 // didn't consume the entire user input
+		// Suggestion ran out before input was consumed.
+		return 0
 	}
 	return si
 }
 
-// foldRune strips common diacritics by decomposing to NFD and
-// returning only the first (base) rune.
-// (e.g. ü → u + combining diaeresis)
+// foldRune returns the base rune of r after NFD decomposition,
+// stripping common diacritics (e.g. ü -> u).
 func foldRune(r rune) rune {
 	decomposed := norm.NFD.String(string(r))
 	base, _ := utf8.DecodeRuneInString(decomposed)

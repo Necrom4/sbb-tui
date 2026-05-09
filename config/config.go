@@ -1,4 +1,4 @@
-// Package config handles application configuration and theming.
+// Package config loads and merges the YAML user config with sane defaults.
 package config
 
 import (
@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config holds CLI flag values to pre-fill the TUI form.
+// Config carries every value the UI consumes at startup.
 type Config struct {
 	From           string
 	To             string
@@ -23,7 +23,7 @@ type Config struct {
 	CurrentVersion string
 }
 
-// UIConfig groups all UI-related settings.
+// UIConfig groups the UI-related settings exposed in the YAML file.
 type UIConfig struct {
 	Animations *bool `yaml:"animations"`
 	NerdFont   *bool `yaml:"nerdfont"`
@@ -34,7 +34,7 @@ type fileConfig struct {
 	UI UIConfig `yaml:"ui"`
 }
 
-// Theme defines color values for the TUI appearance.
+// Theme holds every themable color in the TUI.
 type Theme struct {
 	Text              string `yaml:"text"`
 	TextMuted         string `yaml:"textMuted"`
@@ -74,19 +74,19 @@ func DefaultTheme() Theme {
 	}
 }
 
+// configFilePath returns the path the config should be read from,
+// preferring $HOME/.config and falling back to the OS default.
 func configFilePath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("resolving config path: %w", err)
 	}
 
-	// Prefer $HOME/.config/
 	primary := filepath.Join(home, ".config", "sbb-tui", "config.yaml")
 	if _, err := os.Stat(primary); err == nil {
 		return primary, nil
 	}
 
-	// Fall back to OS default config path
 	cfgDir, err := os.UserConfigDir()
 	if err != nil {
 		return primary, nil
@@ -94,7 +94,7 @@ func configFilePath() (string, error) {
 	return filepath.Join(cfgDir, "sbb-tui", "config.yaml"), nil
 }
 
-// loadFile reads and parses the config file, returning a raw fileConfig.
+// loadFile reads and parses the YAML config file, or returns an empty config when missing.
 func loadFile() (fileConfig, error) {
 	path, err := configFilePath()
 	if err != nil {
@@ -117,7 +117,7 @@ func loadFile() (fileConfig, error) {
 	return cfg, nil
 }
 
-// LoadConfig reads the config file and returns a Config with defaults merged.
+// LoadConfig returns a Config built from defaults overridden by file values.
 func LoadConfig() (Config, error) {
 	result := Config{
 		NerdFont:   true,
@@ -142,6 +142,7 @@ func LoadConfig() (Config, error) {
 	return result, nil
 }
 
+// mergeTheme returns base with each non-empty field of override applied on top.
 func mergeTheme(base Theme, override Theme) Theme {
 	if override.Text != "" {
 		base.Text = override.Text

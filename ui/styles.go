@@ -8,8 +8,8 @@ import (
 	"github.com/necrom4/sbb-tui/config"
 )
 
+// Layout dimensions used by the TUI views.
 const (
-	// Layout dimensions
 	borderSize          = 2
 	headerHeight        = 3
 	resultMargin        = 1
@@ -24,13 +24,13 @@ const (
 	minTermHeight       = 24
 )
 
-// Foreground hex used by the adaptive themeColor helper. Picked to be
-// readable on either background extreme.
+// Hex values themeColor uses when expanding the "white"/"black" adaptive sentinels.
 const (
 	adaptiveLight = "#1A1A1A"
 	adaptiveDark  = "#FFFFFF"
 )
 
+// styles holds every lipgloss style and color the UI consumes.
 type styles struct {
 	text            lipgloss.Style
 	error           lipgloss.Style
@@ -53,6 +53,7 @@ type styles struct {
 	backgroundKnown bool
 }
 
+// newStyles builds the runtime style set from a Theme.
 func newStyles(theme config.Theme) styles {
 	bg, bgKnown := detectBackground()
 
@@ -111,8 +112,8 @@ func newStyles(theme config.Theme) styles {
 	}
 }
 
-// detectBackground returns the terminal's background color and
-// whether the OSC 11 query produced a usable value.
+// detectBackground returns the terminal's background color and whether the
+// OSC 11 query produced a usable value.
 func detectBackground() (colorful.Color, bool) {
 	raw := termenv.BackgroundColor()
 	if _, isNo := raw.(termenv.NoColor); isNo {
@@ -121,9 +122,8 @@ func detectBackground() (colorful.Color, bool) {
 	return termenv.ConvertToRGB(raw), true
 }
 
-// themeColor accepts a theme value (hex like "#RRGGBB" or the
-// adaptive sentinels "white"/"black") and returns a lipgloss color
-// that resolves correctly on both light and dark terminals.
+// themeColor expands a theme value (hex or "white"/"black" sentinel) into a
+// lipgloss color that resolves correctly on both light and dark terminals.
 func themeColor(s string) lipgloss.TerminalColor {
 	switch s {
 	case "white":
@@ -134,14 +134,15 @@ func themeColor(s string) lipgloss.TerminalColor {
 	return lipgloss.Color(s)
 }
 
+// Pure-RGB references used by the animation gradients.
 var (
 	colorBlack = colorful.Color{R: 0, G: 0, B: 0}
 	colorWhite = colorful.Color{R: 1, G: 1, B: 1}
 )
 
-// parseColor converts a theme color string into the RGB color the
-// terminal will actually display, expanding the "white"/"black"
-// adaptive sentinels via the detected background.
+// parseColor converts a theme color string into the RGB color the terminal
+// will actually display, expanding "white"/"black" via the detected background
+// so the animations can reason about the on-screen color.
 func parseColor(s string) colorful.Color {
 	if c, err := colorful.Hex(s); err == nil {
 		return c
@@ -173,6 +174,7 @@ func parseColor(s string) colorful.Color {
 	return colorWhite
 }
 
+// mustHex parses a hard-coded hex string, returning the zero color on impossible failure.
 func mustHex(s string) colorful.Color {
 	c, _ := colorful.Hex(s)
 	return c

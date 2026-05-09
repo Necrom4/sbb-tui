@@ -1,5 +1,7 @@
 package ui
 
+// iconSet groups every glyph the UI uses, so callers don't need to
+// branch between Nerd Font and Unicode-fallback variants at use sites.
 type iconSet struct {
 	// Mode-dependent (Nerd Font vs Unicode fallback)
 	arrival   string
@@ -27,9 +29,9 @@ type iconSet struct {
 	keyEsc    string
 }
 
+// newIconSet returns the glyphs to use, swapping the mode-dependent ones based on nerdFont.
 func newIconSet(nerdFont bool) iconSet {
 	icons := iconSet{
-		// Shared symbols
 		platform: "Pl.",
 		stop:     "Stop",
 		towards:  "→",
@@ -50,12 +52,12 @@ func newIconSet(nerdFont bool) iconSet {
 
 	if nerdFont {
 		icons.arrival = "󰗔"
-		icons.departure = ""
-		icons.search = ""
-		icons.swap = ""
-		icons.vehicle = ""
-		icons.walk = ""
-		icons.prompt = " "
+		icons.departure = ""
+		icons.search = ""
+		icons.swap = ""
+		icons.vehicle = ""
+		icons.walk = ""
+		icons.prompt = " "
 	} else {
 		icons.arrival = "⤙"
 		icons.departure = "⤚"
@@ -69,6 +71,7 @@ func newIconSet(nerdFont bool) iconSet {
 	return icons
 }
 
+// platformLabel picks "Stop" for letter-prefixed platform strings, otherwise "Pl.".
 func (ic iconSet) platformLabel(platform string) string {
 	if len(platform) > 0 && platform[0] >= 'A' && platform[0] <= 'Z' {
 		return ic.stop
