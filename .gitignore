@@ -1,2 +1,4 @@
 # Added by goreleaser init:
 dist/
+/.direnv
+/vendor
