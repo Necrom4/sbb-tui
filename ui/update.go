@@ -494,6 +494,7 @@ func (m appModel) searchCmd() tea.Cmd {
 		res, err := api.FetchConnections(
 			m.inputs[0].Value(),
 			m.inputs[1].Value(),
+			nil,
 			toAPIDate(completeDate(m.inputs[2].Value())),
 			completeTime(m.inputs[3].Value()),
 			m.isArrivalTime,

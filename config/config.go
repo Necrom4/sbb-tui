@@ -14,6 +14,7 @@ import (
 type Config struct {
 	From           string
 	To             string
+	Via            []string
 	Date           string
 	Time           string
 	IsArrivalTime  bool

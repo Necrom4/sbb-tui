@@ -20,6 +20,7 @@ var version = "dev"
 func main() {
 	from := flag.String("from", "", "Pre-fill departure station")
 	to := flag.String("to", "", "Pre-fill arrival station")
+	via := flag.StringArray("via", nil, "Pre-fill via station(s) [repeat flag for multiple]")
 	date := flag.String("date", "", "Pre-fill date [DD.MM.YYYY]")
 	timeStr := flag.String("time", "", "Pre-fill time [HH:MM]")
 	arrival := flag.Bool("arrival", false, "Set date/time as arrival instead of departure time")
@@ -53,6 +54,7 @@ func main() {
 	// CLI flag values override config file values.
 	cfg.From = *from
 	cfg.To = *to
+	cfg.Via = *via
 	if *date != "" {
 		if _, err := time.Parse("02.01.2006", *date); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
