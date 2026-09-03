@@ -91,7 +91,7 @@ func TestFetchConnections(t *testing.T) {
 		]}`))
 	})
 
-	conns, err := FetchConnections("Bern", "Luzern", "2026-06-15", "14:00", true, 5)
+	conns, err := FetchConnections("Bern", "Luzern", nil, "2026-06-15", "14:00", true, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,7 +124,7 @@ func TestFetchConnectionsDepartureOmitsTimeType(t *testing.T) {
 		_, _ = w.Write([]byte(`{"connections": [{"from": "Bern"}]}`))
 	})
 
-	if _, err := FetchConnections("Bern", "Luzern", "", "", false, 3); err != nil {
+	if _, err := FetchConnections("Bern", "Luzern", nil, "", "", false, 3); err != nil {
 		t.Fatal(err)
 	}
 
@@ -141,7 +141,7 @@ func TestFetchConnectionsAPIMessage(t *testing.T) {
 		_, _ = w.Write([]byte(`{"messages": ["Stop xyz not found."], "request": null, "eof": 1}`))
 	})
 
-	_, err := FetchConnections("xyz", "Bern", "", "", false, 3)
+	_, err := FetchConnections("xyz", "Bern", nil, "", "", false, 3)
 	if err == nil {
 		t.Fatal("expected error from API message")
 	}
@@ -155,7 +155,7 @@ func TestFetchConnectionsHTTPError(t *testing.T) {
 		w.WriteHeader(http.StatusTooManyRequests)
 	})
 
-	if _, err := FetchConnections("Bern", "Luzern", "", "", false, 3); err == nil {
+	if _, err := FetchConnections("Bern", "Luzern", nil, "", "", false, 4); err == nil {
 		t.Fatal("expected error on HTTP 429")
 	}
 }
@@ -165,7 +165,7 @@ func TestFetchConnectionsEmptyResult(t *testing.T) {
 		_, _ = w.Write([]byte(`{"connections": []}`))
 	})
 
-	conns, err := FetchConnections("Bern", "Luzern", "", "", false, 3)
+	conns, err := FetchConnections("Bern", "Luzern", nil, "", "", false, 3)
 	if err != nil {
 		t.Fatal(err)
 	}

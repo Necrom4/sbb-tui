@@ -79,10 +79,15 @@ func FetchLocations(query string) ([]string, error) {
 
 // FetchConnections returns up to `limit` connections between two stations.
 // date is expected as YYYY-MM-DD and timeStr as HH:MM.
-func FetchConnections(from, to, date, timeStr string, isArrivalTime bool, limit int) ([]model.Connection, error) {
+func FetchConnections(from, to string, via []string, date, timeStr string, isArrivalTime bool, limit int) ([]model.Connection, error) {
 	params := url.Values{}
 	params.Set("from", from)
 	params.Set("to", to)
+	for _, v := range via {
+		if v != "" {
+			params.Add("via[]", v)
+		}
+	}
 	if date != "" {
 		params.Set("date", date)
 	}
